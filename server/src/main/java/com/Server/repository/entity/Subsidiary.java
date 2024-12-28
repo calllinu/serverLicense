@@ -15,6 +15,10 @@ import java.util.List;
 public class Subsidiary {
 
     @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column(name = "subsidiary_code")
     private Long subsidiaryCode;
 

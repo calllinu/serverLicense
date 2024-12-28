@@ -1,12 +1,14 @@
 package com.Server.service.implementation;
 
-import com.Server.exception.EmailAlreadyExistException;
+import com.Server.exception.OrganizationNotFoundException;
+import com.Server.exception.SubsidiaryNotFoundException;
 import com.Server.exception.UserAlreadyExistException;
+import com.Server.repository.EmployeeRepository;
+import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.UserRepository;
 import com.Server.repository.dto.LoginResponseDTO;
 import com.Server.repository.dto.UserResponseDTO;
-import com.Server.repository.entity.Role;
-import com.Server.repository.entity.User;
+import com.Server.repository.entity.*;
 import com.Server.service.UserService;
 import com.Server.security.JwtUtil;
 import jakarta.annotation.PostConstruct;
@@ -27,14 +29,20 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final Set<String> blacklistedTokens = new HashSet<>();
+    private final SubsidiaryRepository subsidiaryRepository;
+    private final EmployeeRepository employeeRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            ModelMapper modelMapper,
-                           JwtUtil jwtUtil) {
+                           JwtUtil jwtUtil,
+                           SubsidiaryRepository subsidiaryRepository,
+                           EmployeeRepository employeeRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtUtil = jwtUtil;
+        this.subsidiaryRepository = subsidiaryRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @PostConstruct
@@ -45,7 +53,8 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public UserResponseDTO addUser(String username, String email, String fullName, String password) {
+    public UserResponseDTO addUser(String username, String email, String fullName, String password, Long organizationId, Long subsidiaryCode) {
+
         if (userRepository.findByUsernameOrEmail(username, email).isPresent()) {
             if (log.isErrorEnabled()) {
                 log.error("Attempt to add user failed: User '{}' already exists", username);
@@ -57,8 +66,11 @@ public class UserServiceImpl implements UserService {
             if (log.isErrorEnabled()) {
                 log.error("Attempt to add user failed: Email '{}' already exists", email);
             }
-            throw new EmailAlreadyExistException("Email already exist!");
+            throw new OrganizationNotFoundException("Email already exists!");
         }
+
+        Subsidiary subsidiary = subsidiaryRepository.findById(subsidiaryCode)
+                .orElseThrow(() -> new SubsidiaryNotFoundException("Subsidiary not found"));
 
         User user = new User();
         user.setUsername(username);
@@ -67,6 +79,17 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = this.passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
         user.setRole(Role.EMPLOYEE);
+
+        userRepository.save(user);
+
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employee.setSubsidiary(subsidiary);
+        employee.setFullName(fullName);
+
+        employeeRepository.save(employee);
+
+        user.setEmployee(employee);
         userRepository.save(user);
 
         if (log.isInfoEnabled()) {

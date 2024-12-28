@@ -1,6 +1,14 @@
 package com.Server.controller;
 
+import com.Server.exception.OrganizationNotFoundException;
+import com.Server.exception.SubsidiaryNotFoundException;
+import com.Server.repository.OrganizationRepository;
+import com.Server.repository.SubsidiaryRepository;
+import com.Server.repository.UserRepository;
 import com.Server.repository.dto.*;
+import com.Server.repository.entity.Employee;
+import com.Server.repository.entity.Organization;
+import com.Server.repository.entity.Subsidiary;
 import com.Server.security.TokenBlacklistService;
 import com.Server.service.UserService;
 import com.Server.security.JwtUtil;
@@ -18,7 +26,8 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService) {
+    public UserController(UserService userService,
+                          JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
@@ -27,17 +36,23 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> addUser(@RequestBody UserRequestDTO userRequest) {
         try {
-            UserResponseDTO userResponse =
-                    userService.addUser(userRequest.getUsername(),
-                            userRequest.getEmail(),
-                            userRequest.getFullName(),
-                            userRequest.getPassword());
+            UserResponseDTO userResponse = userService.addUser(
+                    userRequest.getUsername(),
+                    userRequest.getEmail(),
+                    userRequest.getFullName(),
+                    userRequest.getPassword(),
+                    userRequest.getOrganizationId(),
+                    userRequest.getSubsidiaryId()
+            );
+
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
+
         } catch (Exception e) {
             log.error("Error adding user: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @Transactional
     @PostMapping("/login")
