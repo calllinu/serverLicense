@@ -17,12 +17,10 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    private final TokenBlacklistService tokenBlacklistService;
 
     public UserController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
-        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Transactional

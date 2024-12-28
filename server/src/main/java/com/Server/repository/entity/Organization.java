@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.testcontainers.shaded.org.checkerframework.common.aliasing.qual.Unique;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 import java.util.List;
 
@@ -16,8 +16,13 @@ import java.util.List;
 public class Organization {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
+    @Unique
     @Column(name = "register_code")
-    private Long registerCode;
+    private String registerCode;
 
     @Column(name = "name")
     private String name;
@@ -26,6 +31,7 @@ public class Organization {
     private Integer yearOfEstablishment;
 
     @Column(name = "industry")
+    @Enumerated(EnumType.STRING)
     private Industry industry;
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

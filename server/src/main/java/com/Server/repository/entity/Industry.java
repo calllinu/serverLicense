@@ -1,6 +1,5 @@
 package com.Server.repository.entity;
 
-
 public enum Industry {
     CONSTRUCTION,
     AGRICULTURE,
@@ -8,3 +7,4 @@ public enum Industry {
     TRANSPORT_AND_LOGISTICS,
     MANUFACTURING,
 }
+

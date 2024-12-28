@@ -9,7 +9,7 @@ import com.Server.repository.entity.Role;
 import com.Server.repository.entity.User;
 import com.Server.service.UserService;
 import com.Server.security.JwtUtil;
-import lombok.extern.java.Log;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +37,13 @@ public class UserServiceImpl implements UserService {
         this.jwtUtil = jwtUtil;
     }
 
+    @PostConstruct
+    private void initialize() {
+        blacklistedTokens.clear();
+        if (log.isInfoEnabled()) {
+            log.info("Blacklisted tokens cleared on server startup.");
+        }
+    }
     @Override
     public UserResponseDTO addUser(String username, String email, String fullName, String password) {
         if (userRepository.findByUsernameOrEmail(username, email).isPresent()) {
@@ -59,7 +66,7 @@ public class UserServiceImpl implements UserService {
         user.setFullName(fullName);
         String encodedPassword = this.passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
-        user.setRole(Role.ANALYST);
+        user.setRole(Role.EMPLOYEE);
         userRepository.save(user);
 
         if (log.isInfoEnabled()) {

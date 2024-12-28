@@ -34,6 +34,10 @@ public class Employee {
     @JoinColumn(name = "subsidiary_code")
     private Subsidiary subsidiary;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private Feedback feedback;
 }

@@ -27,9 +27,6 @@ public class Subsidiary {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "nr_employees")
-    private Integer nrOfEmployees;
-
     @ManyToOne
     @JoinColumn(name = "register_code")
     private Organization organization;

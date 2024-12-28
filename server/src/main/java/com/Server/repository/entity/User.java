@@ -34,4 +34,7 @@ public class User {
 
     @Column(name = "role")
     private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Employee employee;
 }

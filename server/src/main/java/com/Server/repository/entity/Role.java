@@ -1,6 +1,7 @@
 package com.Server.repository.entity;
 
 public enum Role {
-    ADMIN,
-    ANALYST,
+    ORG_ADMIN,
+    EMPLOYEE,
+    OWNER
 }
