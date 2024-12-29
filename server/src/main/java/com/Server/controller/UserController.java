@@ -41,7 +41,6 @@ public class UserController {
                     userRequest.getEmail(),
                     userRequest.getFullName(),
                     userRequest.getPassword(),
-                    userRequest.getOrganizationId(),
                     userRequest.getSubsidiaryId()
             );
 
@@ -91,9 +90,4 @@ public class UserController {
             return ResponseEntity.status(500).body(response);
         }
     }
-
-
-
-
-
 }

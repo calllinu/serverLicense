@@ -1,5 +1,7 @@
 package com.Server.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,12 +17,12 @@ import java.util.List;
 public class Subsidiary {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "subsidiary_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long subsidiaryId;
 
     @Column(name = "subsidiary_code")
-    private Long subsidiaryCode;
+    private String subsidiaryCode;
 
     @Column(name = "country")
     private String country;
@@ -32,9 +34,11 @@ public class Subsidiary {
     private String address;
 
     @ManyToOne
-    @JoinColumn(name = "register_code")
+    @JoinColumn(name = "organization_id", referencedColumnName = "organization_id")
+    @JsonBackReference
     private Organization organization;
 
     @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Employee> employees;
 }

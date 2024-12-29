@@ -24,9 +24,9 @@ public class OrganizationController {
         return ResponseEntity.ok(createdOrganization);
     }
 
-    @DeleteMapping("/remove/{registerCode}")
-    public ResponseEntity<String> removeOrganization(@PathVariable Long registerCode) {
-        boolean isDeleted = organizationService.removeOrganization(registerCode);
+    @DeleteMapping("/remove/{organizationId}")
+    public ResponseEntity<String> removeOrganization(@PathVariable Long organizationId) {
+        boolean isDeleted = organizationService.removeOrganization(organizationId);
         if (isDeleted) {
             return ResponseEntity.ok("Organization removed successfully.");
         } else {
@@ -34,18 +34,18 @@ public class OrganizationController {
         }
     }
 
-    @PutMapping("/update/{registerCode}")
+    @PutMapping("/update/{organizationId}")
     public ResponseEntity<Organization> updateOrganizationFields(
-            @PathVariable Long registerCode,
+            @PathVariable Long organizationId,
             @RequestBody Organization updatedFields) {
-        Optional<Organization> updatedOrganization = organizationService.updateOrganizationFields(registerCode, updatedFields);
+        Optional<Organization> updatedOrganization = organizationService.updateOrganizationFields(organizationId, updatedFields);
         return updatedOrganization.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(404).body(null));
     }
 
-    @GetMapping("/get/{registerCode}")
-    public ResponseEntity<Organization> getOrganizationByRegisterCode(@PathVariable Long registerCode) {
-        Optional<Organization> organization = organizationService.getOrganizationByRegisterCode(registerCode);
+    @GetMapping("/get/{organizationId}")
+    public ResponseEntity<Organization> getOrganizationByRegisterCode(@PathVariable Long organizationId) {
+        Optional<Organization> organization = organizationService.getOrganizationByRegisterCode(organizationId);
         return organization.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(404).body(null));
     }

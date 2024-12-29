@@ -3,6 +3,7 @@ package com.Server.service.implementation;
 import com.Server.exception.OrganizationNotFoundException;
 import com.Server.exception.SubsidiaryNotFoundException;
 import com.Server.exception.UserAlreadyExistException;
+import com.Server.exception.UserNotFoundException;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.UserRepository;
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public UserResponseDTO addUser(String username, String email, String fullName, String password, Long organizationId, Long subsidiaryCode) {
+    public UserResponseDTO addUser(String username, String email, String fullName, String password, Long subsidiaryId) {
 
         if (userRepository.findByUsernameOrEmail(username, email).isPresent()) {
             if (log.isErrorEnabled()) {
@@ -62,14 +63,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistException("User already exists!");
         }
 
-        if (userRepository.findByEmail(email).isPresent()) {
-            if (log.isErrorEnabled()) {
-                log.error("Attempt to add user failed: Email '{}' already exists", email);
-            }
-            throw new OrganizationNotFoundException("Email already exists!");
-        }
-
-        Subsidiary subsidiary = subsidiaryRepository.findById(subsidiaryCode)
+        Subsidiary subsidiary = subsidiaryRepository.findById(subsidiaryId)
                 .orElseThrow(() -> new SubsidiaryNotFoundException("Subsidiary not found"));
 
         User user = new User();
@@ -101,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponseDTO authenticateUser(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (passwordEncoder.matches(password, user.getPassword())) {
             String accessToken = jwtUtil.generateAccessToken(user.getUsername());

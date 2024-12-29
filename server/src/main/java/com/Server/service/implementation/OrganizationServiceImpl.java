@@ -21,17 +21,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public boolean removeOrganization(Long registerCode) {
-        if (organizationRepository.existsById(registerCode)) {
-            organizationRepository.deleteById(registerCode);
+    public boolean removeOrganization(Long organizationId) {
+        if (organizationRepository.existsById(organizationId)) {
+            organizationRepository.deleteById(organizationId);
             return true;
         }
         return false;
     }
 
     @Override
-    public Optional<Organization> updateOrganizationFields(Long registerCode, Organization updatedFields) {
-        return organizationRepository.findById(registerCode).map(existingOrganization -> {
+    public Optional<Organization> updateOrganizationFields(Long organizationId, Organization updatedFields) {
+        return organizationRepository.findById(organizationId).map(existingOrganization -> {
             if (updatedFields.getName() != null) {
                 existingOrganization.setName(updatedFields.getName());
             }
@@ -46,8 +46,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Optional<Organization> getOrganizationByRegisterCode(Long registerCode) {
-        return organizationRepository.findById(registerCode);
+    public Optional<Organization> getOrganizationByRegisterCode(Long organizationId) {
+        return organizationRepository.findById(organizationId);
     }
 
     @Override

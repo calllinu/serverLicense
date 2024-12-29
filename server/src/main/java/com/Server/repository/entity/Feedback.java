@@ -1,5 +1,6 @@
 package com.Server.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class Feedback {
     private WorkTime workTime;
 
     @OneToOne
-    @JoinColumn(name = "employee_cnp", referencedColumnName = "employee_cnp")
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
+    @JsonBackReference
     private Employee employee;
 }
