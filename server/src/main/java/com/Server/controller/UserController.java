@@ -1,35 +1,20 @@
 package com.Server.controller;
 
-import com.Server.exception.OrganizationNotFoundException;
-import com.Server.exception.SubsidiaryNotFoundException;
-import com.Server.repository.OrganizationRepository;
-import com.Server.repository.SubsidiaryRepository;
-import com.Server.repository.UserRepository;
 import com.Server.repository.dto.*;
-import com.Server.repository.entity.Employee;
-import com.Server.repository.entity.Organization;
-import com.Server.repository.entity.Subsidiary;
-import com.Server.security.TokenBlacklistService;
 import com.Server.service.UserService;
-import com.Server.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @Log4j2
 public class UserController {
     private final UserService userService;
-    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService,
-                          JwtUtil jwtUtil) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -58,17 +43,8 @@ public class UserController {
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
             LoginResponseDTO loginResponse = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-            if (loginResponse != null) {
-                String accessToken = jwtUtil.generateAccessToken(loginResponse.getUsername());
-                String refreshToken = jwtUtil.generateRefreshToken(loginResponse.getUsername());
 
-                loginResponse.setAccessToken(accessToken);
-                loginResponse.setRefreshToken(refreshToken);
-
-                return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Login error: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

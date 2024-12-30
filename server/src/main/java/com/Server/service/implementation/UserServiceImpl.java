@@ -104,12 +104,14 @@ public class UserServiceImpl implements UserService {
             LoginResponseDTO loginResponseDTO = modelMapper.map(user, LoginResponseDTO.class);
             loginResponseDTO.setAccessToken(accessToken);
             loginResponseDTO.setRefreshToken(refreshToken);
+            loginResponseDTO.setUserId(user.getUserId());
 
             return loginResponseDTO;
         } else {
             throw new RuntimeException("Invalid credentials");
         }
     }
+
 
 
     @Override
