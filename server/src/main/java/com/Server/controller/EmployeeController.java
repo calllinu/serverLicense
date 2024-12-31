@@ -1,5 +1,6 @@
 package com.Server.controller;
 
+import com.Server.repository.dto.EmployeeResponseDTO;
 import com.Server.repository.entity.Employee;
 import com.Server.service.EmployeeService;
 import org.springframework.http.HttpStatus;
@@ -17,22 +18,27 @@ public class EmployeeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Employee> getEmployeeByUserId(@RequestParam Long userId) {
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeByUserId(@RequestParam Long userId) {
         try {
             Employee employee = employeeService.getEmployeeByUserId(userId);
-            return new ResponseEntity<>(employee, HttpStatus.OK);
+            EmployeeResponseDTO employeeDTO = EmployeeResponseDTO.fromEntity(employee);
+            return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/user")
-    public ResponseEntity<Employee> updateEmployee(@RequestParam Long userId, @RequestBody Employee updatedEmployee) {
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<Void> updateEmployee(
+            @RequestBody Employee updatedEmployee,
+            @PathVariable Long userId) {
         try {
-            Employee updated = employeeService.updateEmployee(userId, updatedEmployee);
-            return new ResponseEntity<>(updated, HttpStatus.OK);
+            employeeService.updateEmployee(userId, updatedEmployee);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
 }

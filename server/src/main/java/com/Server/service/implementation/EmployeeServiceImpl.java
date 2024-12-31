@@ -23,18 +23,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee updateEmployee(Long userId, Employee updatedEmployee) {
+    public void updateEmployee(Long userId, Employee updatedEmployee) {
         Employee existingEmployee = getEmployeeByUserId(userId);
 
         updateIfNotNull(existingEmployee::setFullName, updatedEmployee.getFullName());
         updateIfNotNull(existingEmployee::setEmployeeCNP, updatedEmployee.getEmployeeCNP());
         updateIfNotNull(existingEmployee::setDateOfBirth, updatedEmployee.getDateOfBirth());
         updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
-        updateIfNotNull(existingEmployee::setYearsOfExperience, updatedEmployee.getYearsOfExperience());
-        updateIfNotNull(existingEmployee::setSubsidiary, updatedEmployee.getSubsidiary());
-        updateIfNotNull(existingEmployee::setUser, updatedEmployee.getUser());
 
-        return employeeRepository.save(existingEmployee);
+        employeeRepository.save(existingEmployee);
     }
 
     private <T> void updateIfNotNull(java.util.function.Consumer<T> setter, T value) {

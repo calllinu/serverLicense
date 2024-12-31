@@ -35,10 +35,12 @@ public class Subsidiary {
 
     @ManyToOne
     @JoinColumn(name = "organization_id", referencedColumnName = "organization_id")
-    @JsonBackReference
+    @JsonBackReference("organizationReference")
     private Organization organization;
 
     @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("subsidiaryReference")
     private List<Employee> employees;
 }
+
+

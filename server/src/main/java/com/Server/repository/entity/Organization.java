@@ -21,7 +21,6 @@ public class Organization {
     @Column(name = "organization_id")
     private Long organizationId;
 
-    @Unique
     @Column(name = "organization_code", nullable = false, unique = true)
     private String organizationCode;
 
@@ -36,6 +35,8 @@ public class Organization {
     private Industry industry;
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("organizationReference") // Allow serialization from Organization to Subsidiary
     private List<Subsidiary> subsidiaries;
 }
+
+

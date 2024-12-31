@@ -1,6 +1,7 @@
 package com.Server.repository.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,7 @@ public class Feedback {
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
-    @JsonBackReference
     private Employee employee;
 }
+
+
