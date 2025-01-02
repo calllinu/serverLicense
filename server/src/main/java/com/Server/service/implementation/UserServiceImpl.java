@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -81,6 +83,7 @@ public class UserServiceImpl implements UserService {
         employee.setUser(user);
         employee.setSubsidiary(subsidiary);
         employee.setFullName(fullName);
+        employee.setYearsOfExperience(calculateYearsOfExperience(employee));
 
         employeeRepository.save(employee);
 
@@ -132,5 +135,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public PasswordEncoder getPasswordEncoder() {
         return this.passwordEncoder;
+    }
+
+    protected Integer calculateYearsOfExperience(Employee employee) {
+        if (employee.getDateOfHiring() != null) {
+            return Period.between(employee.getDateOfHiring(), LocalDate.now()).getYears();
+        }
+        return 0;
     }
 }

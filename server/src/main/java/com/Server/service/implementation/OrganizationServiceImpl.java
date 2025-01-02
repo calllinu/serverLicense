@@ -16,8 +16,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Organization addOrganization(Organization organization) {
-        return organizationRepository.save(organization);
+    public void addOrganization(Organization organization) {
+        organizationRepository.save(organization);
     }
 
     @Override

@@ -19,9 +19,9 @@ public class OrganizationController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Organization> addOrganization(@RequestBody Organization organization) {
-        Organization createdOrganization = organizationService.addOrganization(organization);
-        return ResponseEntity.ok(createdOrganization);
+    public ResponseEntity<Void> addOrganization(@RequestBody Organization organization) {
+        organizationService.addOrganization(organization);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/remove/{organizationId}")

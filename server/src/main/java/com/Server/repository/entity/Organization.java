@@ -27,7 +27,7 @@ public class Organization {
     private String name;
 
     @Column(name = "year_of_establishment")
-    private Integer yearOfEstablishment;
+    private Long yearOfEstablishment;
 
     @Column(name = "admin_email", nullable = false)
     private String adminEmail;
@@ -39,6 +39,8 @@ public class Organization {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("organizationReference")
     private List<Subsidiary> subsidiaries;
+
+
 }
 
 
