@@ -7,14 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import com.Server.repository.entity.Qualification;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 public class EmployeeResponseDTO {
     private Long employeeId;
     private String employeeCNP;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String fullName;
     private Qualification qualification;
     private Integer yearsOfExperience;

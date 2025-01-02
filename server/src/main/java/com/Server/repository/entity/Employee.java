@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.Year;
 
 @Data
 @Entity
@@ -26,7 +28,7 @@ public class Employee {
 
     @Column(name = "date_of_birth", nullable = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "full_name")
     private String fullName;
@@ -35,8 +37,9 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Qualification qualification;
 
-    @Column(name = "years_of_experience", nullable = true)
-    private Integer yearsOfExperience;
+    @Column(name = "date_of_hiring", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate dateOfHiring;
 
     @ManyToOne
     @JoinColumn(name = "subsidiary_id", referencedColumnName = "subsidiary_id")
@@ -50,6 +53,11 @@ public class Employee {
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private Feedback feedback;
+
+    public Integer getYearsOfExperience() {
+        if (dateOfHiring != null) {
+            return Period.between(dateOfHiring, Year.of(2025).atDay(1)).getYears();
+        }
+        return 0;
+    }
 }
-
-

@@ -1,6 +1,12 @@
 package com.Server.controller;
 
+import com.Server.repository.EmployeeRepository;
+import com.Server.repository.RegistrationRequestRepository;
+import com.Server.repository.SubsidiaryRepository;
+import com.Server.repository.UserRepository;
 import com.Server.repository.dto.*;
+import com.Server.repository.entity.*;
+import com.Server.service.EmailService;
 import com.Server.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -8,34 +14,115 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @Log4j2
 public class UserController {
     private final UserService userService;
+    private final RegistrationRequestRepository registrationRequestRepository;
+    private final SubsidiaryRepository subsidiaryRepository;
+    private final EmailService emailService;
+    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          EmailService emailService,
+                          RegistrationRequestRepository registrationRequestRepository,
+                          SubsidiaryRepository subsidiaryRepository,
+                          UserRepository userRepository,
+                          EmployeeRepository employeeRepository) {
         this.userService = userService;
+        this.emailService = emailService;
+        this.registrationRequestRepository = registrationRequestRepository;
+        this.subsidiaryRepository = subsidiaryRepository;
+        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
     }
 
-    @Transactional
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> addUser(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<String> submitRegistrationRequest(@RequestBody UserRequestDTO userRequest) {
         try {
-            UserResponseDTO userResponse = userService.addUser(
-                    userRequest.getUsername(),
-                    userRequest.getEmail(),
-                    userRequest.getFullName(),
-                    userRequest.getPassword(),
-                    userRequest.getSubsidiaryId()
-            );
+            Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid subsidiary ID"));
 
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+            Organization organization = subsidiary.getOrganization();
+            String adminEmail = organization.getAdminEmail();
 
+            RegistrationRequest request = new RegistrationRequest();
+            request.setUsername(userRequest.getUsername());
+            request.setEmail(userRequest.getEmail());
+            request.setFullName(userRequest.getFullName());
+
+            String encryptedPassword = userService.getPasswordEncoder().encode(userRequest.getPassword());
+            request.setPassword(encryptedPassword);
+            request.setSubsidiary(subsidiary);
+            request.setStatus(RequestStatus.PENDING);
+            registrationRequestRepository.save(request);
+
+            Map<String, Object> adminTemplateData = new HashMap<>();
+            adminTemplateData.put("fullName", request.getFullName());
+            adminTemplateData.put("email", request.getEmail());
+            adminTemplateData.put("subsidiary", subsidiary.getSubsidiaryCode());
+
+            emailService.sendTemplateEmail(adminEmail,
+                    "[SafetyNet AI] New Registration Request",
+                    "admin-notification.ftl",
+                    adminTemplateData);
+
+            return new ResponseEntity<>("Registration request submitted successfully.", HttpStatus.CREATED);
         } catch (Exception e) {
-            log.error("Error adding user: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error submitting registration request: {}", e.getMessage());
+            return new ResponseEntity<>("Failed to submit registration request.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PatchMapping("/register/approve/{requestId}")
+    public ResponseEntity<String> approveRegistrationRequest(@PathVariable Long requestId) {
+        try {
+            RegistrationRequest request = registrationRequestRepository.findById(requestId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid request ID"));
+
+            if (request.getStatus() != RequestStatus.PENDING) {
+                return new ResponseEntity<>("Request is not in a pending state.", HttpStatus.BAD_REQUEST);
+            }
+
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            user.setFullName(request.getFullName());
+            user.setPassword(request.getPassword());
+            user.setRole(Role.EMPLOYEE);
+            userRepository.save(user);
+
+            Employee employee = new Employee();
+            employee.setFullName(request.getFullName());
+            employee.setUser(user);
+            employee.setSubsidiary(request.getSubsidiary());
+            employeeRepository.save(employee);
+
+            request.setStatus(RequestStatus.APPROVED);
+            registrationRequestRepository.save(request);
+
+            Map<String, Object> userTemplateData = new HashMap<>();
+            userTemplateData.put("fullName", request.getFullName());
+            userTemplateData.put("message", "Your registration request has been approved. Welcome to SafetyNet AI!");
+
+            emailService.sendTemplateEmail(request.getEmail(),
+                    "[SafetyNet AI] Registration Approved",
+                    "user-notification.ftl",
+                    userTemplateData);
+
+            return new ResponseEntity<>("Registration approved successfully.", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error approving registration request: {}", e.getMessage());
+            return new ResponseEntity<>("Failed to approve registration request.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
     @Transactional

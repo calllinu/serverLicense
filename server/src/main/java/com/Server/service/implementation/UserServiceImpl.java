@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
             log.info("Blacklisted tokens cleared on server startup.");
         }
     }
+
     @Override
     public UserResponseDTO addUser(String username, String email, String fullName, String password, Long subsidiaryId) {
 
@@ -126,5 +127,10 @@ public class UserServiceImpl implements UserService {
         if (log.isInfoEnabled()) {
             log.info("User logged out successfully. Tokens blacklisted: AccessToken '{}', RefreshToken '{}'", accessToken, refreshToken);
         }
+    }
+
+    @Override
+    public PasswordEncoder getPasswordEncoder() {
+        return this.passwordEncoder;
     }
 }
