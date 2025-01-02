@@ -79,8 +79,8 @@ public class UserController {
     }
 
 
-    @PatchMapping("/register/approve/{requestId}")
-    public ResponseEntity<String> approveRegistrationRequest(@PathVariable Long requestId) {
+    @PatchMapping("/register/decline/{requestId}")
+    public ResponseEntity<String> declineRegistrationRequest(@PathVariable Long requestId) {
         try {
             RegistrationRequest request = registrationRequestRepository.findById(requestId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid request ID"));
@@ -89,41 +89,24 @@ public class UserController {
                 return new ResponseEntity<>("Request is not in a pending state.", HttpStatus.BAD_REQUEST);
             }
 
-            User user = new User();
-            user.setUsername(request.getUsername());
-            user.setEmail(request.getEmail());
-            user.setFullName(request.getFullName());
-            user.setPassword(request.getPassword());
-            user.setRole(Role.EMPLOYEE);
-            userRepository.save(user);
-
-            Employee employee = new Employee();
-            employee.setFullName(request.getFullName());
-            employee.setUser(user);
-            employee.setSubsidiary(request.getSubsidiary());
-            employeeRepository.save(employee);
-
-            request.setStatus(RequestStatus.APPROVED);
+            request.setStatus(RequestStatus.REJECTED);
             registrationRequestRepository.save(request);
 
             Map<String, Object> userTemplateData = new HashMap<>();
             userTemplateData.put("fullName", request.getFullName());
-            userTemplateData.put("message", "Your registration request has been approved. Welcome to SafetyNet AI!");
+            userTemplateData.put("message", "Your registration request has been declined. Please contact support for further information.");
 
             emailService.sendTemplateEmail(request.getEmail(),
-                    "[SafetyNet AI] Registration Approved",
+                    "[SafetyNet AI] Registration Declined",
                     "user-notification.ftl",
                     userTemplateData);
 
-            return new ResponseEntity<>("Registration approved successfully.", HttpStatus.OK);
+            return new ResponseEntity<>("Registration request declined successfully.", HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Error approving registration request: {}", e.getMessage());
-            return new ResponseEntity<>("Failed to approve registration request.", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error declining registration request: {}", e.getMessage());
+            return new ResponseEntity<>("Failed to decline registration request.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
 
     @Transactional
     @PostMapping("/login")
