@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class OrganizationRequestDTO {
-    private String registerCode;
+    private String organizationCode;
     private String name;
-    private Integer yearOfEstablishment;
+    private Long yearOfEstablishment;
     private Industry industry;
 }

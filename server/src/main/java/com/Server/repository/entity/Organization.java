@@ -29,9 +29,6 @@ public class Organization {
     @Column(name = "year_of_establishment")
     private Long yearOfEstablishment;
 
-    @Column(name = "admin_email", nullable = false)
-    private String adminEmail;
-
     @Column(name = "industry")
     @Enumerated(EnumType.STRING)
     private Industry industry;

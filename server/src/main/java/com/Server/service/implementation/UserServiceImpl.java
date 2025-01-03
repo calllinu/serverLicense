@@ -1,3 +1,4 @@
+
 package com.Server.service.implementation;
 
 import com.Server.exception.OrganizationNotFoundException;
@@ -5,47 +6,58 @@ import com.Server.exception.SubsidiaryNotFoundException;
 import com.Server.exception.UserAlreadyExistException;
 import com.Server.exception.UserNotFoundException;
 import com.Server.repository.EmployeeRepository;
+import com.Server.repository.RegistrationRequestRepository;
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.UserRepository;
 import com.Server.repository.dto.LoginResponseDTO;
+import com.Server.repository.dto.UserRequestDTO;
 import com.Server.repository.dto.UserResponseDTO;
 import com.Server.repository.entity.*;
-import com.Server.service.UserService;
 import com.Server.security.JwtUtil;
+import com.Server.service.EmailService;
+import com.Server.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Log4j2
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RegistrationRequestRepository registrationRequestRepository;
+    private final SubsidiaryRepository subsidiaryRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmailService emailService;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final Set<String> blacklistedTokens = new HashSet<>();
-    private final SubsidiaryRepository subsidiaryRepository;
-    private final EmployeeRepository employeeRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                           ModelMapper modelMapper,
-                           JwtUtil jwtUtil,
+                           RegistrationRequestRepository registrationRequestRepository,
                            SubsidiaryRepository subsidiaryRepository,
-                           EmployeeRepository employeeRepository) {
+                           EmployeeRepository employeeRepository,
+                           EmailService emailService,
+                           ModelMapper modelMapper,
+                           JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.registrationRequestRepository = registrationRequestRepository;
+        this.subsidiaryRepository = subsidiaryRepository;
+        this.employeeRepository = employeeRepository;
+        this.emailService = emailService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtUtil = jwtUtil;
-        this.subsidiaryRepository = subsidiaryRepository;
-        this.employeeRepository = employeeRepository;
     }
 
     @PostConstruct
@@ -57,44 +69,59 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO addUser(String username, String email, String fullName, String password, Long subsidiaryId) {
+    public void submitRegistrationRequest(UserRequestDTO userRequest) {
+        Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid subsidiary ID"));
 
-        if (userRepository.findByUsernameOrEmail(username, email).isPresent()) {
-            if (log.isErrorEnabled()) {
-                log.error("Attempt to add user failed: User '{}' already exists", username);
-            }
-            throw new UserAlreadyExistException("User already exists!");
+        String adminEmail = subsidiary.getEmployees().stream()
+                .map(Employee::getUser)
+                .filter(user -> user.getRole() == Role.ORG_ADMIN)
+                .findFirst()
+                .map(User::getEmail)
+                .orElseThrow(() -> new IllegalStateException("No ORG_ADMIN found!"));
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setUsername(userRequest.getUsername());
+        request.setEmail(userRequest.getEmail());
+        request.setFullName(userRequest.getFullName());
+
+        String encryptedPassword = passwordEncoder.encode(userRequest.getPassword());
+        request.setPassword(encryptedPassword);
+        request.setSubsidiary(subsidiary);
+        request.setStatus(RequestStatus.PENDING);
+        registrationRequestRepository.save(request);
+
+        Map<String, Object> adminTemplateData = new HashMap<>();
+        adminTemplateData.put("fullName", request.getFullName());
+        adminTemplateData.put("email", request.getEmail());
+        adminTemplateData.put("subsidiary", subsidiary.getSubsidiaryCode());
+
+        emailService.sendTemplateEmail(adminEmail,
+                "[SafetyNet AI] New Registration Request",
+                "admin-notification.ftl",
+                adminTemplateData);
+    }
+
+    @Override
+    public void declineRegistrationRequest(Long requestId) {
+        RegistrationRequest request = registrationRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request ID"));
+
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("Request is not in a pending state.");
         }
 
-        Subsidiary subsidiary = subsidiaryRepository.findById(subsidiaryId)
-                .orElseThrow(() -> new SubsidiaryNotFoundException("Subsidiary not found"));
+        request.setStatus(RequestStatus.REJECTED);
+        registrationRequestRepository.save(request);
 
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setFullName(fullName);
-        String encodedPassword = this.passwordEncoder.encode(password);
-        user.setPassword(encodedPassword);
-        user.setRole(Role.EMPLOYEE);
+        Map<String, Object> userTemplateData = new HashMap<>();
+        userTemplateData.put("fullName", request.getFullName());
+        userTemplateData.put("message", "Your registration request has been declined. Please contact support for further information.");
 
-        userRepository.save(user);
-
-        Employee employee = new Employee();
-        employee.setUser(user);
-        employee.setSubsidiary(subsidiary);
-        employee.setFullName(fullName);
-        employee.setYearsOfExperience(calculateYearsOfExperience(employee));
-
-        employeeRepository.save(employee);
-
-        user.setEmployee(employee);
-        userRepository.save(user);
-
-        if (log.isInfoEnabled()) {
-            log.info("New user added successfully: Username '{}', Email '{}'", username, email);
-        }
-
-        return modelMapper.map(user, UserResponseDTO.class);
+        emailService.sendTemplateEmail(request.getEmail(),
+                "[SafetyNet AI] Registration Declined",
+                "user-notification.ftl",
+                userTemplateData);
     }
 
     @Override
@@ -115,8 +142,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid credentials");
         }
     }
-
-
 
     @Override
     public void logout(String accessToken, String refreshToken) {

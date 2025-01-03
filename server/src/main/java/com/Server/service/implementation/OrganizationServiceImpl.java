@@ -1,7 +1,13 @@
 package com.Server.service.implementation;
 
+import com.Server.repository.dto.OrganizationRequestDTO;
+import com.Server.repository.dto.OrganizationResponseDTO;
+import com.Server.repository.dto.UserResponseDTO;
+import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Organization;
 import com.Server.repository.OrganizationRepository;
+import com.Server.repository.entity.Role;
+import com.Server.repository.entity.User;
 import com.Server.service.OrganizationService;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,7 +22,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void addOrganization(Organization organization) {
+    public void addOrganization(OrganizationRequestDTO organizationRequestDTO) {
+        Organization organization = new Organization();
+        organization.setOrganizationCode(organizationRequestDTO.getOrganizationCode());
+        organization.setName(organizationRequestDTO.getName());
+        organization.setYearOfEstablishment(organizationRequestDTO.getYearOfEstablishment());
+        organization.setIndustry(organizationRequestDTO.getIndustry());
         organizationRepository.save(organization);
     }
 
@@ -51,7 +62,36 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public List<Organization> getAllOrganizations() {
-        return organizationRepository.findAll();
+    public List<OrganizationResponseDTO> getAllOrganizations() {
+        return organizationRepository.findAll().stream().map(organization -> {
+            OrganizationResponseDTO dto = new OrganizationResponseDTO();
+            dto.setOrganizationId(organization.getOrganizationId());
+            dto.setOrganizationCode(organization.getOrganizationCode());
+            dto.setName(organization.getName());
+            dto.setYearOfEstablishment(organization.getYearOfEstablishment());
+            dto.setIndustry(organization.getIndustry());
+            dto.setSubsidiaries(organization.getSubsidiaries());
+
+            User orgAdmin = organization.getSubsidiaries().stream()
+                    .flatMap(subsidiary -> subsidiary.getEmployees().stream())
+                    .map(Employee::getUser)
+                    .filter(user -> user.getRole() == Role.ORG_ADMIN)
+                    .findFirst()
+                    .orElse(null);
+
+            if (orgAdmin != null) {
+                UserResponseDTO orgAdminDTO = new UserResponseDTO();
+
+                orgAdminDTO.setUsername(orgAdmin.getUsername());
+                orgAdminDTO.setFullName(orgAdmin.getFullName());
+                orgAdminDTO.setEmail(orgAdmin.getEmail());
+                orgAdminDTO.setRole(orgAdmin.getRole());
+
+                dto.setAdmin(orgAdminDTO);
+            }
+
+            return dto;
+        }).toList();
     }
+
 }

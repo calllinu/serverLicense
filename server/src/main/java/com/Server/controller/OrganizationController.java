@@ -1,5 +1,7 @@
 package com.Server.controller;
 
+import com.Server.repository.dto.OrganizationRequestDTO;
+import com.Server.repository.dto.OrganizationResponseDTO;
 import com.Server.repository.entity.Organization;
 import com.Server.service.OrganizationService;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,8 @@ public class OrganizationController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addOrganization(@RequestBody Organization organization) {
-        organizationService.addOrganization(organization);
+    public ResponseEntity<Void> addOrganization(@RequestBody OrganizationRequestDTO organizationRequestDTO) {
+        organizationService.addOrganization(organizationRequestDTO);
         return ResponseEntity.ok().build();
     }
 
@@ -51,8 +53,8 @@ public class OrganizationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Organization>> getAllOrganizations() {
-        List<Organization> organizations = organizationService.getAllOrganizations();
+    public ResponseEntity<List<OrganizationResponseDTO>> getAllOrganizations() {
+        List<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations();
         return ResponseEntity.ok(organizations);
     }
 }
