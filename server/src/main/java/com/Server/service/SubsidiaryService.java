@@ -2,6 +2,8 @@ package com.Server.service;
 
 import com.Server.repository.dto.SubsidiaryRequestDTO;
 import com.Server.repository.dto.SubsidiaryResponseDTO;
+import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +13,7 @@ public interface SubsidiaryService {
 
     boolean removeSubsidiary(Long subsidiaryId);
 
-    Optional<SubsidiaryResponseDTO> updateSubsidiaryFields(Long subsidiaryId, SubsidiaryRequestDTO updatedFields);
+    Boolean updateSubsidiaryFields(Long subsidiaryId, SubsidiaryUpdateRequestDTO updatedFields);
 
     Optional<SubsidiaryResponseDTO> getSubsidiaryById(Long subsidiaryId);
 

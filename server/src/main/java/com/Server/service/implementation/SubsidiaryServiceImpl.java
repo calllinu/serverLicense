@@ -2,6 +2,7 @@ package com.Server.service.implementation;
 
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.OrganizationRepository;
+import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
 import com.Server.repository.entity.Organization;
 import com.Server.repository.entity.Subsidiary;
 import com.Server.repository.dto.SubsidiaryRequestDTO;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,33 +59,22 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     }
 
     @Override
-    public Optional<SubsidiaryResponseDTO> updateSubsidiaryFields(Long subsidiaryId, SubsidiaryRequestDTO updatedFields) {
-        return subsidiaryRepository.findById(subsidiaryId).map(existingSubsidiary -> {
-            Optional<Organization> organizationOptional = organizationRepository.findById(updatedFields.getOrganizationId());
+    public Boolean updateSubsidiaryFields(Long subsidiaryId, SubsidiaryUpdateRequestDTO updatedFields) {
+        return subsidiaryRepository.findById(subsidiaryId)
+                .map(existingSubsidiary -> {
+                    updateIfNotNull(existingSubsidiary::setCountry, updatedFields.getCountry());
+                    updateIfNotNull(existingSubsidiary::setCity, updatedFields.getCity());
+                    updateIfNotNull(existingSubsidiary::setAddress, updatedFields.getAddress());
 
-            if (organizationOptional.isEmpty()) {
-                throw new IllegalArgumentException("Organization with ID " + updatedFields.getOrganizationId() + " not found.");
-            }
+                    subsidiaryRepository.save(existingSubsidiary);
+                    return true;
+                }).orElse(false);
+    }
 
-            Organization organization = organizationOptional.get();
-
-            if (updatedFields.getSubsidiaryCode() != null) {
-                existingSubsidiary.setSubsidiaryCode(updatedFields.getSubsidiaryCode());
-            }
-            if (updatedFields.getCountry() != null) {
-                existingSubsidiary.setCountry(updatedFields.getCountry());
-            }
-            if (updatedFields.getCity() != null) {
-                existingSubsidiary.setCity(updatedFields.getCity());
-            }
-            if (updatedFields.getAddress() != null) {
-                existingSubsidiary.setAddress(updatedFields.getAddress());
-            }
-            existingSubsidiary.setOrganization(organization);
-
-            Subsidiary updatedSubsidiary = subsidiaryRepository.save(existingSubsidiary);
-            return Optional.of(mapToSubsidiaryResponseDTO(updatedSubsidiary));
-        }).orElse(Optional.empty());
+    private <T> void updateIfNotNull(Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
+        }
     }
 
     @Override

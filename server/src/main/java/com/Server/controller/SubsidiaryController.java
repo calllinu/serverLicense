@@ -2,6 +2,7 @@ package com.Server.controller;
 
 import com.Server.repository.dto.SubsidiaryRequestDTO;
 import com.Server.repository.dto.SubsidiaryResponseDTO;
+import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
 import com.Server.service.SubsidiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,12 +42,11 @@ public class SubsidiaryController {
     }
 
     @PutMapping("/update/{subsidiaryId}")
-    public ResponseEntity<SubsidiaryResponseDTO> updateSubsidiaryFields(
+    public ResponseEntity<Void> updateSubsidiaryFields(
             @PathVariable Long subsidiaryId,
-            @RequestBody SubsidiaryRequestDTO updatedFields) {
-        Optional<SubsidiaryResponseDTO> updatedSubsidiary = subsidiaryService.updateSubsidiaryFields(subsidiaryId, updatedFields);
-        return updatedSubsidiary.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body(null));
+            @RequestBody SubsidiaryUpdateRequestDTO updatedFields) {
+        boolean isUpdated = subsidiaryService.updateSubsidiaryFields(subsidiaryId, updatedFields);
+        return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/get/{subsidiaryId}")
