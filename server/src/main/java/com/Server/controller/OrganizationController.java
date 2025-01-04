@@ -4,6 +4,7 @@ import com.Server.repository.dto.OrganizationRequestDTO;
 import com.Server.repository.dto.OrganizationResponseDTO;
 import com.Server.repository.entity.Organization;
 import com.Server.service.OrganizationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +28,15 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/remove/{organizationId}")
-    public ResponseEntity<String> removeOrganization(@PathVariable Long organizationId) {
+    public ResponseEntity<Void> removeOrganization(@PathVariable Long organizationId) {
         boolean isDeleted = organizationService.removeOrganization(organizationId);
         if (isDeleted) {
-            return ResponseEntity.ok("Organization removed successfully.");
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(404).body("Organization not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
 
     @PutMapping("/update/{organizationId}")
     public ResponseEntity<Organization> updateOrganizationFields(
