@@ -4,11 +4,15 @@ import com.Server.repository.dto.OrganizationRequestDTO;
 import com.Server.repository.dto.OrganizationResponseDTO;
 import com.Server.repository.entity.Organization;
 import com.Server.service.OrganizationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -55,8 +59,17 @@ public class OrganizationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<OrganizationResponseDTO>> getAllOrganizations() {
-        List<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations();
-        return ResponseEntity.ok(organizations);
+    public ResponseEntity<Map<String, Object>> getAllOrganizations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations(PageRequest.of(page, size));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", organizations.getContent());
+        response.put("total", organizations.getTotalElements());
+        response.put("page", page);
+        response.put("size", size);
+
+        return ResponseEntity.ok(response);
     }
 }

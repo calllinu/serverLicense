@@ -9,6 +9,8 @@ import com.Server.repository.OrganizationRepository;
 import com.Server.repository.entity.Role;
 import com.Server.repository.entity.User;
 import com.Server.service.OrganizationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -59,8 +61,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public List<OrganizationResponseDTO> getAllOrganizations() {
-        return organizationRepository.findAll().stream().map(organization -> {
+    public Page<OrganizationResponseDTO> getAllOrganizations(PageRequest pageRequest) {
+        return organizationRepository.findAll(pageRequest).map(organization -> {
             OrganizationResponseDTO dto = new OrganizationResponseDTO();
             dto.setOrganizationId(organization.getOrganizationId());
             dto.setOrganizationCode(organization.getOrganizationCode());
@@ -78,7 +80,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             if (orgAdmin != null) {
                 UserResponseDTO orgAdminDTO = new UserResponseDTO();
-
                 orgAdminDTO.setUsername(orgAdmin.getUsername());
                 orgAdminDTO.setFullName(orgAdmin.getFullName());
                 orgAdminDTO.setEmail(orgAdmin.getEmail());
@@ -88,7 +89,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
 
             return dto;
-        }).toList();
+        });
     }
 
 }
