@@ -49,9 +49,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (updatedFields.getYearOfEstablishment() != null) {
                 existingOrganization.setYearOfEstablishment(updatedFields.getYearOfEstablishment());
             }
-            if (updatedFields.getIndustry() != null) {
-                existingOrganization.setIndustry(updatedFields.getIndustry());
-            }
             return organizationRepository.save(existingOrganization);
         });
     }
