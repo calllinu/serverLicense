@@ -14,5 +14,5 @@ public interface OrganizationService {
     boolean removeOrganization(Long organizationId);
     Optional<Organization> updateOrganizationFields(Long organizationId, Organization updatedFields);
     Optional<Organization> getOrganizationByRegisterCode(Long organizationId);
-    Page<OrganizationResponseDTO> getAllOrganizations(PageRequest pageRequest);
+    Page<OrganizationResponseDTO> getAllOrganizations(PageRequest pageRequest, String search);
 }

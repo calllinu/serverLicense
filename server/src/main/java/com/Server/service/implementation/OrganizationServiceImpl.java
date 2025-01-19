@@ -61,8 +61,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Page<OrganizationResponseDTO> getAllOrganizations(PageRequest pageRequest) {
-        return organizationRepository.findAll(pageRequest).map(organization -> {
+    public Page<OrganizationResponseDTO> getAllOrganizations(PageRequest pageRequest, String search) {
+        return organizationRepository.findBySearch(search, pageRequest).map(organization -> {
             OrganizationResponseDTO dto = new OrganizationResponseDTO();
             dto.setOrganizationId(organization.getOrganizationId());
             dto.setOrganizationCode(organization.getOrganizationCode());
@@ -91,5 +91,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             return dto;
         });
     }
+
 
 }

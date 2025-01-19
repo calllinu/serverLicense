@@ -61,8 +61,10 @@ public class OrganizationController {
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllOrganizations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Page<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations(PageRequest.of(page, size));
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "") String search) {
+
+        Page<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations(PageRequest.of(page, size), search);
 
         Map<String, Object> response = new HashMap<>();
         response.put("data", organizations.getContent());
@@ -72,4 +74,5 @@ public class OrganizationController {
 
         return ResponseEntity.ok(response);
     }
+
 }
