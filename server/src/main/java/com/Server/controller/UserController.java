@@ -29,17 +29,6 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/register/decline/{requestId}")
-    public ResponseEntity<String> declineRegistrationRequest(@PathVariable Long requestId) {
-        try {
-            userService.declineRegistrationRequest(requestId);
-            return new ResponseEntity<>("Registration request declined successfully.", HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Error declining registration request: {}", e.getMessage());
-            return new ResponseEntity<>("Failed to decline registration request.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @Transactional
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {

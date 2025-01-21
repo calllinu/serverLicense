@@ -8,8 +8,6 @@ public interface UserService {
 
     void submitRegistrationRequest(UserRequestDTO userRequest);
 
-    void declineRegistrationRequest(Long requestId);
-
     LoginResponseDTO authenticateUser(String email, String password);
 
     void logout(String accessToken, String refreshToken);

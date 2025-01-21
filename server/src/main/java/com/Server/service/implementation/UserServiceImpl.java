@@ -103,28 +103,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void declineRegistrationRequest(Long requestId) {
-        RegistrationRequest request = registrationRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid request ID"));
-
-        if (request.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalStateException("Request is not in a pending state.");
-        }
-
-        request.setStatus(RequestStatus.REJECTED);
-        registrationRequestRepository.save(request);
-
-        Map<String, Object> userTemplateData = new HashMap<>();
-        userTemplateData.put("fullName", request.getFullName());
-        userTemplateData.put("message", "Your registration request has been declined. Please contact support for further information.");
-
-        emailService.sendTemplateEmail(request.getEmail(),
-                "[SafetyNet AI] Registration Declined",
-                "user-notification.ftl",
-                userTemplateData);
-    }
-
-    @Override
     public LoginResponseDTO authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
 
