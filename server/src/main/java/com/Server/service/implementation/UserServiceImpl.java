@@ -73,11 +73,10 @@ public class UserServiceImpl implements UserService {
         Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subsidiary ID"));
 
-        String adminEmail = subsidiary.getEmployees().stream()
+        User admin = subsidiary.getEmployees().stream()
                 .map(Employee::getUser)
                 .filter(user -> user.getRole() == Role.ORG_ADMIN)
                 .findFirst()
-                .map(User::getEmail)
                 .orElseThrow(() -> new IllegalStateException("No ORG_ADMIN found!"));
 
         RegistrationRequest request = new RegistrationRequest();
@@ -88,6 +87,7 @@ public class UserServiceImpl implements UserService {
         String encryptedPassword = passwordEncoder.encode(userRequest.getPassword());
         request.setPassword(encryptedPassword);
         request.setSubsidiary(subsidiary);
+        request.setAdminId(admin.getUserId());
         request.setStatus(RequestStatus.PENDING);
         registrationRequestRepository.save(request);
 
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
         adminTemplateData.put("email", request.getEmail());
         adminTemplateData.put("subsidiary", subsidiary.getSubsidiaryCode());
 
-        emailService.sendTemplateEmail(adminEmail,
+        emailService.sendTemplateEmail(admin.getEmail(),
                 "[SafetyNet AI] New Registration Request",
                 "admin-notification.ftl",
                 adminTemplateData);

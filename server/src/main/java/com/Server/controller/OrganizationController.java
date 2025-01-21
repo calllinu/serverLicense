@@ -58,13 +58,13 @@ public class OrganizationController {
                 .orElseGet(() -> ResponseEntity.status(404).body(null));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/pageable-all")
     public ResponseEntity<Map<String, Object>> getAllOrganizations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "") String search) {
 
-        Page<OrganizationResponseDTO> organizations = organizationService.getAllOrganizations(PageRequest.of(page, size), search);
+        Page<OrganizationResponseDTO> organizations = organizationService.getAllOrganizationsPageable(PageRequest.of(page, size), search);
 
         Map<String, Object> response = new HashMap<>();
         response.put("data", organizations.getContent());
@@ -74,5 +74,12 @@ public class OrganizationController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Organization>> getAllOrganizations() {
+        List<Organization> organizations = organizationService.getAllOrganizations();
+        return ResponseEntity.ok(organizations);
+    }
+
 
 }

@@ -38,8 +38,6 @@ public class Employee {
     @Column(name = "years_of_experience", nullable = false)
     private Integer yearsOfExperience;
 
-
-
     @Column(name = "date_of_hiring", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfHiring;

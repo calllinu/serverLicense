@@ -29,6 +29,9 @@ public class RegistrationRequest {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "admin_id", nullable = false)
+    private Long adminId;
+
     @ManyToOne
     @JoinColumn(name = "subsidiary_id", referencedColumnName = "subsidiary_id")
     private Subsidiary subsidiary;
