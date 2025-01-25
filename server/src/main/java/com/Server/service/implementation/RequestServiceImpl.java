@@ -1,12 +1,10 @@
 package com.Server.service.implementation;
 
+import com.Server.repository.EmployeeRepository;
 import com.Server.repository.RegistrationRequestRepository;
 import com.Server.repository.UserRepository;
 import com.Server.repository.dto.RegistrationResponseDTO;
-import com.Server.repository.entity.RegistrationRequest;
-import com.Server.repository.entity.RequestStatus;
-import com.Server.repository.entity.Role;
-import com.Server.repository.entity.User;
+import com.Server.repository.entity.*;
 import com.Server.service.EmailService;
 import com.Server.service.RequestService;
 import org.springframework.stereotype.Service;
@@ -20,16 +18,19 @@ import java.util.stream.Collectors;
 public class RequestServiceImpl implements RequestService {
 
     private final RegistrationRequestRepository registrationRequestRepository;
+    private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
 
 
     public RequestServiceImpl(RegistrationRequestRepository registrationRequestRepository,
                               UserRepository userRepository,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              EmployeeRepository employeeRepository) {
         this.registrationRequestRepository = registrationRequestRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -63,8 +64,14 @@ public class RequestServiceImpl implements RequestService {
         user.setFullName(request.getFullName());
         user.setPassword(request.getPassword());
         user.setRole(Role.EMPLOYEE);
-
         userRepository.save(user);
+
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employee.setFullName(request.getFullName());
+        employee.setSubsidiary(request.getSubsidiary());
+        employeeRepository.save(employee);
+
 
         request.setStatus(RequestStatus.APPROVED);
         registrationRequestRepository.save(request);

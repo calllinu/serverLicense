@@ -73,7 +73,10 @@ public class UserServiceImpl implements UserService {
         Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subsidiary ID"));
 
-        User admin = subsidiary.getEmployees().stream()
+        Organization organization = subsidiary.getOrganization();
+
+        User admin = organization.getSubsidiaries().stream()
+                .flatMap(sub -> sub.getEmployees().stream())
                 .map(Employee::getUser)
                 .filter(user -> user.getRole() == Role.ORG_ADMIN)
                 .findFirst()

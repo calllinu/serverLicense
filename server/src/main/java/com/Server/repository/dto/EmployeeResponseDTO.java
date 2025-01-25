@@ -15,6 +15,7 @@ public class EmployeeResponseDTO {
     private Long employeeId;
     private String employeeCNP;
     private LocalDate dateOfBirth;
+    private LocalDate dateOfHiring;
     private String fullName;
     private Qualification qualification;
     private Integer yearsOfExperience;
@@ -26,6 +27,7 @@ public class EmployeeResponseDTO {
                 employee.getEmployeeId(),
                 employee.getEmployeeCNP(),
                 employee.getDateOfBirth(),
+                employee.getDateOfHiring(),
                 employee.getFullName(),
                 employee.getQualification(),
                 employee.getYearsOfExperience(),

@@ -35,10 +35,10 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Qualification qualification;
 
-    @Column(name = "years_of_experience", nullable = false)
+    @Column(name = "years_of_experience", nullable = true)
     private Integer yearsOfExperience;
 
-    @Column(name = "date_of_hiring", nullable = false)
+    @Column(name = "date_of_hiring", nullable = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfHiring;
 

@@ -29,6 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         updateIfNotNull(existingEmployee::setFullName, updatedEmployee.getFullName());
         updateIfNotNull(existingEmployee::setEmployeeCNP, updatedEmployee.getEmployeeCNP());
         updateIfNotNull(existingEmployee::setDateOfBirth, updatedEmployee.getDateOfBirth());
+        updateIfNotNull(existingEmployee::setDateOfHiring, updatedEmployee.getDateOfHiring());
         updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
 
         employeeRepository.save(existingEmployee);
