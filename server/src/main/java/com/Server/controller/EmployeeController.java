@@ -28,7 +28,6 @@ public class EmployeeController {
         }
     }
 
-
     @PutMapping("/update/{userId}")
     public ResponseEntity<Void> updateEmployee(
             @RequestBody Employee updatedEmployee,
@@ -36,6 +35,16 @@ public class EmployeeController {
         try {
             employeeService.updateEmployee(userId, updatedEmployee);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/null-fields/{userId}")
+    public ResponseEntity<Boolean> hasNullFields(@PathVariable Long userId) {
+        try {
+            boolean hasNullFields = employeeService.hasNullFields(userId);
+            return new ResponseEntity<>(hasNullFields, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

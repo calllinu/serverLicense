@@ -7,12 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.IntStream;
+import org.springframework.core.env.Environment;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -22,22 +24,34 @@ public class DataLoader implements CommandLineRunner {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final RegistrationRequestRepository registrationRequestRepository;
+    private final Environment environment;
 
     public DataLoader(OrganizationRepository organizationRepository,
                       SubsidiaryRepository subsidiaryRepository,
                       EmployeeRepository employeeRepository,
                       UserRepository userRepository,
-                      RegistrationRequestRepository registrationRequestRepository) {
+                      RegistrationRequestRepository registrationRequestRepository,
+                      Environment environment) {
         this.organizationRepository = organizationRepository;
         this.subsidiaryRepository = subsidiaryRepository;
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.registrationRequestRepository = registrationRequestRepository;
+        this.environment = environment;
     }
 
     @Override
     @Transactional
     public void run(String... args) {
+        // Check if the ddl-auto property is set to create
+        String ddlAuto = environment.getProperty("spring.jpa.hibernate.ddl-auto");
+        if ("create".equalsIgnoreCase(ddlAuto)) {
+            loadData();
+        }
+    }
+
+    private void loadData() {
+        // Your existing logic for loading data
         Random random = new Random();
 
         // Realistic organization names
@@ -65,6 +79,7 @@ public class DataLoader implements CommandLineRunner {
         List<String> streets = List.of("Main Street", "Oak Avenue", "Pine Road", "Elm Street", "Maple Drive", "Sunset Boulevard", "Broadway");
 
         final boolean[] ownerAssigned = {false}; // Ensures only one owner in the app
+        Set<String> usedEmails = new HashSet<>(); // Track already used emails globally
 
         IntStream.range(0, 50).forEach(orgIndex -> {
             // Create and save an Organization
@@ -101,20 +116,35 @@ public class DataLoader implements CommandLineRunner {
 
                     String fullName = firstName + " " + lastName;
 
+                    // Create a base email
+                    String baseEmail = fullName.replace(" ", ".").toLowerCase() + "@example.com";
+                    String email = baseEmail;
+
+                    // Ensure email uniqueness
+                    int emailCounter = 1;
+                    while (usedEmails.contains(email)) {
+                        email = baseEmail.replace("@example.com", "") + emailCounter + "@example.com";
+                        emailCounter++;
+                    }
+                    usedEmails.add(email);
+
                     // Create and save an Employee
                     Employee employee = new Employee();
                     employee.setFullName(fullName);
                     employee.setEmployeeCNP("CNP" + (orgIndex + 1) + subIndex + empIndex);
-                    employee.setDateOfBirth(LocalDate.of(1980 + random.nextInt(30), 1 + random.nextInt(12), 1 + random.nextInt(28)));
+                    LocalDate dateOfBirth = LocalDate.of(1980 + random.nextInt(30), 1 + random.nextInt(12), 1 + random.nextInt(28));
+                    employee.setDateOfBirth(dateOfBirth);
+
                     employee.setQualification(Qualification.values()[random.nextInt(Qualification.values().length)]);
                     employee.setYearsOfExperience(random.nextInt(20));
-                    employee.setDateOfHiring(LocalDate.of(2000 + random.nextInt(23), 1 + random.nextInt(12), 1 + random.nextInt(28)));
+                    LocalDate dateOfHiring = LocalDate.of(2000 + random.nextInt(23), 1 + random.nextInt(12), 1 + random.nextInt(28));
+                    employee.setDateOfHiring(dateOfHiring);
                     employee.setSubsidiary(subsidiary);
 
                     // Create and save a User
                     User user = new User();
                     user.setUsername(fullName.replace(" ", "").toLowerCase());
-                    user.setEmail(fullName.replace(" ", ".").toLowerCase() + "@example.com");
+                    user.setEmail(email);
                     user.setFullName(fullName);
                     user.setPassword("password" + empIndex);
 

@@ -1,9 +1,6 @@
 
 package com.Server.service.implementation;
 
-import com.Server.exception.OrganizationNotFoundException;
-import com.Server.exception.SubsidiaryNotFoundException;
-import com.Server.exception.UserAlreadyExistException;
 import com.Server.exception.UserNotFoundException;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.RegistrationRequestRepository;
@@ -11,7 +8,6 @@ import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.UserRepository;
 import com.Server.repository.dto.LoginResponseDTO;
 import com.Server.repository.dto.UserRequestDTO;
-import com.Server.repository.dto.UserResponseDTO;
 import com.Server.repository.entity.*;
 import com.Server.security.JwtUtil;
 import com.Server.service.EmailService;
@@ -141,12 +137,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public PasswordEncoder getPasswordEncoder() {
         return this.passwordEncoder;
-    }
-
-    protected Integer calculateYearsOfExperience(Employee employee) {
-        if (employee.getDateOfHiring() != null) {
-            return Period.between(employee.getDateOfHiring(), LocalDate.now()).getYears();
-        }
-        return 0;
     }
 }

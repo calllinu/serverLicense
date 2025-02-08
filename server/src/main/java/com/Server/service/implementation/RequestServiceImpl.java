@@ -9,6 +9,8 @@ import com.Server.service.EmailService;
 import com.Server.service.RequestService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,7 @@ public class RequestServiceImpl implements RequestService {
         employee.setUser(user);
         employee.setFullName(request.getFullName());
         employee.setSubsidiary(request.getSubsidiary());
+        employee.setYearsOfExperience(calculateYearsOfExperience(employee));
         employeeRepository.save(employee);
 
 
@@ -106,5 +109,12 @@ public class RequestServiceImpl implements RequestService {
                 "[SafetyNet AI] Registration Declined",
                 "user-notification.ftl",
                 userTemplateData);
+    }
+
+    protected Integer calculateYearsOfExperience(Employee employee) {
+        if (employee.getDateOfHiring() != null) {
+            return Period.between(employee.getDateOfHiring(), LocalDate.now()).getYears();
+        }
+        return 0;
     }
 }

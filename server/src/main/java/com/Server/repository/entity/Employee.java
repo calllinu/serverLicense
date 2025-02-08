@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -25,7 +26,7 @@ public class Employee {
     private String employeeCNP;
 
     @Column(name = "date_of_birth", nullable = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate dateOfBirth;
 
     @Column(name = "full_name")
@@ -39,7 +40,7 @@ public class Employee {
     private Integer yearsOfExperience;
 
     @Column(name = "date_of_hiring", nullable = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate dateOfHiring;
 
     @ManyToOne
