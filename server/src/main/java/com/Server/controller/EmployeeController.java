@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
@@ -59,4 +62,18 @@ public class EmployeeController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/subsidiary-employees/{subsidiaryId}")
+    public ResponseEntity<List<EmployeeResponseDTO>> getEmployeesBySubsidiaryId(@PathVariable Long subsidiaryId) {
+        try {
+            List<Employee> employees = employeeService.getEmployeesBySubsidiaryId(subsidiaryId);
+            List<EmployeeResponseDTO> employeesDTO = employees.stream()
+                    .map(EmployeeResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(employeesDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

@@ -34,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         updateIfNotNull(existingEmployee::setFullName, updatedEmployee.getFullName());
         updateIfNotNull(existingEmployee::setEmployeeCNP, updatedEmployee.getEmployeeCNP());
+
         try {
             if (updatedEmployee.getDateOfBirth() != null) {
                 LocalDate dateOfBirth = LocalDate.parse(updatedEmployee.getDateOfBirth().toString());
@@ -42,14 +43,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (updatedEmployee.getDateOfHiring() != null) {
                 LocalDate dateOfHiring = LocalDate.parse(updatedEmployee.getDateOfHiring().toString());
                 existingEmployee.setDateOfHiring(dateOfHiring);
+
+                int yearsOfExperience = calculateYearsOfExperience(dateOfHiring);
+                existingEmployee.setYearsOfExperience(yearsOfExperience);
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format", e);
         }
-        updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
 
+        updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
         employeeRepository.save(existingEmployee);
     }
+
+    private int calculateYearsOfExperience(LocalDate dateOfHiring) {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.getYear() - dateOfHiring.getYear();
+    }
+
 
     private <T> void updateIfNotNull(java.util.function.Consumer<T> setter, T value) {
         Optional.ofNullable(value).ifPresent(setter);
@@ -78,5 +88,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteEmployee(Long userId) {
         employeeRepository.deleteByUserUserId(userId);
+    }
+
+    @Override
+    public List<Employee> getEmployeesBySubsidiaryId(Long subsidiaryId) {
+        return employeeRepository.findAllBySubsidiaryId(subsidiaryId);
     }
 }
