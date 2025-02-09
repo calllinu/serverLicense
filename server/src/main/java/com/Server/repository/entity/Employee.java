@@ -48,13 +48,12 @@ public class Employee {
     @JsonBackReference("subsidiaryReference")
     private Subsidiary subsidiary;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @JsonBackReference("userReference")
     private User user;
 
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Feedback feedback;
-
 
 }

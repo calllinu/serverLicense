@@ -13,6 +13,7 @@ import com.Server.security.JwtUtil;
 import com.Server.service.EmailService;
 import com.Server.service.UserService;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +29,7 @@ import java.util.Set;
 
 @Log4j2
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RegistrationRequestRepository registrationRequestRepository;

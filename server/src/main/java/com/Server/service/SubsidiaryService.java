@@ -11,7 +11,7 @@ public interface SubsidiaryService {
 
     SubsidiaryResponseDTO addSubsidiary(SubsidiaryRequestDTO subsidiaryRequestDTO);
 
-    boolean removeSubsidiary(Long subsidiaryId);
+    void removeSubsidiary(Long subsidiaryId);
 
     Boolean updateSubsidiaryFields(Long subsidiaryId, SubsidiaryUpdateRequestDTO updatedFields);
 

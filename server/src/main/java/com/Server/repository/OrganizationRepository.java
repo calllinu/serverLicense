@@ -13,4 +13,6 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     @Query("SELECT o FROM Organization o WHERE LOWER(o.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(o.organizationCode) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(o.industry) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Organization> findBySearch(@Param("search") String search, Pageable pageable);
 
+    @Query("SELECT o from Organization o JOIN o.subsidiaries s JOIN s.employees e WHERE e.user.userId = :userId")
+    Organization findByAdminUserId(@Param("userId") Long userId);
 }

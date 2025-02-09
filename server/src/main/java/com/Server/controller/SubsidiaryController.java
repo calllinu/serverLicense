@@ -1,5 +1,6 @@
 package com.Server.controller;
 
+import com.Server.exception.SubsidiaryNotFoundException;
 import com.Server.repository.dto.SubsidiaryRequestDTO;
 import com.Server.repository.dto.SubsidiaryResponseDTO;
 import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
@@ -33,11 +34,13 @@ public class SubsidiaryController {
 
     @DeleteMapping("/remove/{subsidiaryId}")
     public ResponseEntity<Void> removeSubsidiary(@PathVariable Long subsidiaryId) {
-        boolean isDeleted = subsidiaryService.removeSubsidiary(subsidiaryId);
-        if (isDeleted) {
+        try {
+            subsidiaryService.removeSubsidiary(subsidiaryId);
             return ResponseEntity.ok().build();
-        } else {
+        } catch (SubsidiaryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

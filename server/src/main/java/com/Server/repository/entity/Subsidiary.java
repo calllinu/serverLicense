@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -38,9 +40,13 @@ public class Subsidiary {
     @JsonBackReference("organizationReference")
     private Organization organization;
 
-    @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("subsidiaryReference")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Employee> employees;
+
+    @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("subsidiaryReference")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<RegistrationRequest> registrationRequests;
 }
-
-

@@ -3,16 +3,17 @@ package com.Server.service.implementation;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.entity.Employee;
 import com.Server.service.EmployeeService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -72,5 +73,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
 
         return fieldGetters.stream().anyMatch(getter -> getter.apply(employee) == null);
+    }
+
+    @Override
+    public void deleteEmployee(Long userId) {
+        employeeRepository.deleteByUserUserId(userId);
     }
 }

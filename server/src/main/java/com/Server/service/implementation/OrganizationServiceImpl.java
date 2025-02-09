@@ -1,14 +1,17 @@
 package com.Server.service.implementation;
 
+import com.Server.exception.OrganizationNotFoundException;
 import com.Server.repository.dto.OrganizationRequestDTO;
 import com.Server.repository.dto.OrganizationResponseDTO;
+import com.Server.repository.SubsidiaryRepository;
+import com.Server.repository.EmployeeRepository;
+import com.Server.repository.RegistrationRequestRepository;
+import com.Server.repository.dto.SubsidiaryForOrganizationDTO;
 import com.Server.repository.dto.UserResponseDTO;
-import com.Server.repository.entity.Employee;
-import com.Server.repository.entity.Organization;
+import com.Server.repository.entity.*;
 import com.Server.repository.OrganizationRepository;
-import com.Server.repository.entity.Role;
-import com.Server.repository.entity.User;
 import com.Server.service.OrganizationService;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,11 +19,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
+    private final SubsidiaryRepository subsidiaryRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RegistrationRequestRepository registrationRequestRepository;
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository,
+                                   SubsidiaryRepository subsidiaryRepository,
+                                   EmployeeRepository employeeRepository,
+                                   RegistrationRequestRepository registrationRequestRepository) {
         this.organizationRepository = organizationRepository;
+        this.subsidiaryRepository = subsidiaryRepository;
+        this.employeeRepository = employeeRepository;
+        this.registrationRequestRepository = registrationRequestRepository;
     }
 
     @Override
@@ -34,12 +47,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public boolean removeOrganization(Long organizationId) {
-        if (organizationRepository.existsById(organizationId)) {
-            organizationRepository.deleteById(organizationId);
-            return true;
+    public void deleteOrganization(Long organizationId) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found"));
+
+        for (Subsidiary subsidiary : organization.getSubsidiaries()) {
+            registrationRequestRepository.deleteAll(subsidiary.getRegistrationRequests());
         }
-        return false;
+
+        for (Subsidiary subsidiary : organization.getSubsidiaries()) {
+            employeeRepository.deleteAll(subsidiary.getEmployees());
+        }
+
+        subsidiaryRepository.deleteAll(organization.getSubsidiaries());
+
+        organizationRepository.delete(organization);
     }
 
     @Override
@@ -95,5 +117,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<Organization> getAllOrganizations() {
         return organizationRepository.findAll();
+    }
+
+    @Override
+    public SubsidiaryForOrganizationDTO getAllSubsidiariesForOrganization(Long userId){
+        Organization organization = organizationRepository.findByAdminUserId(userId);
+        Long organizationId = organization.getOrganizationId();
+        List<Subsidiary> subsidiaries = organization.getSubsidiaries();
+
+        return new SubsidiaryForOrganizationDTO(organizationId, subsidiaries);
     }
 }

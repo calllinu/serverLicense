@@ -7,6 +7,7 @@ import com.Server.repository.dto.RegistrationResponseDTO;
 import com.Server.repository.entity.*;
 import com.Server.service.EmailService;
 import com.Server.service.RequestService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RequestServiceImpl implements RequestService {
 
     private final RegistrationRequestRepository registrationRequestRepository;

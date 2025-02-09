@@ -50,4 +50,13 @@ public class EmployeeController {
         }
     }
 
+    @DeleteMapping("/delete-user/{userId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long userId) {
+        try {
+            employeeService.deleteEmployee(userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }

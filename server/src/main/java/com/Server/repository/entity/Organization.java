@@ -33,7 +33,7 @@ public class Organization {
     @Enumerated(EnumType.STRING)
     private Industry industry;
 
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("organizationReference")
     private List<Subsidiary> subsidiaries;
 

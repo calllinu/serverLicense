@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.transaction.Transactional;
-
 @RestController
 @Log4j2
 public class UserController {
@@ -29,7 +27,6 @@ public class UserController {
         }
     }
 
-    @Transactional
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
         try {

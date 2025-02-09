@@ -2,7 +2,9 @@ package com.Server.controller;
 
 import com.Server.repository.dto.OrganizationRequestDTO;
 import com.Server.repository.dto.OrganizationResponseDTO;
+import com.Server.repository.dto.SubsidiaryForOrganizationDTO;
 import com.Server.repository.entity.Organization;
+import com.Server.repository.entity.Subsidiary;
 import com.Server.service.OrganizationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,14 +35,13 @@ public class OrganizationController {
 
     @DeleteMapping("/remove/{organizationId}")
     public ResponseEntity<Void> removeOrganization(@PathVariable Long organizationId) {
-        boolean isDeleted = organizationService.removeOrganization(organizationId);
-        if (isDeleted) {
+        try {
+            organizationService.deleteOrganization(organizationId);
             return ResponseEntity.ok().build();
-        } else {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
 
     @PutMapping("/update/{organizationId}")
     public ResponseEntity<Organization> updateOrganizationFields(
@@ -81,5 +82,8 @@ public class OrganizationController {
         return ResponseEntity.ok(organizations);
     }
 
-
+    @GetMapping("/subsidiaries/{userId}")
+    public SubsidiaryForOrganizationDTO getAllSubsidiariesForOrganization(@PathVariable Long userId) {
+        return organizationService.getAllSubsidiariesForOrganization(userId);
+    }
 }

@@ -1,9 +1,11 @@
 package com.Server.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Data
 @Entity
@@ -34,6 +36,7 @@ public class RegistrationRequest {
 
     @ManyToOne
     @JoinColumn(name = "subsidiary_id", referencedColumnName = "subsidiary_id")
+    @JsonBackReference("subsidiaryReference")
     private Subsidiary subsidiary;
 
     @Enumerated(EnumType.STRING)

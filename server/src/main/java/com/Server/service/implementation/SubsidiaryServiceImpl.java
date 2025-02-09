@@ -1,13 +1,19 @@
 package com.Server.service.implementation;
 
+import com.Server.exception.SubsidiaryNotFoundException;
+import com.Server.repository.EmployeeRepository;
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.OrganizationRepository;
+import com.Server.repository.UserRepository;
 import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
+import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Organization;
 import com.Server.repository.entity.Subsidiary;
 import com.Server.repository.dto.SubsidiaryRequestDTO;
 import com.Server.repository.dto.SubsidiaryResponseDTO;
+import com.Server.repository.entity.User;
 import com.Server.service.SubsidiaryService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +22,22 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class SubsidiaryServiceImpl implements SubsidiaryService {
 
     private final SubsidiaryRepository subsidiaryRepository;
     private final OrganizationRepository organizationRepository;
+    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
 
-    public SubsidiaryServiceImpl(SubsidiaryRepository subsidiaryRepository, OrganizationRepository organizationRepository) {
+    public SubsidiaryServiceImpl(SubsidiaryRepository subsidiaryRepository,
+                                 OrganizationRepository organizationRepository,
+                                 EmployeeRepository employeeRepository,
+                                 UserRepository userRepository) {
         this.subsidiaryRepository = subsidiaryRepository;
         this.organizationRepository = organizationRepository;
+        this.employeeRepository = employeeRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -50,13 +64,20 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     }
 
     @Override
-    public boolean removeSubsidiary(Long subsidiaryId) {
-        if (subsidiaryRepository.existsById(subsidiaryId)) {
-            subsidiaryRepository.deleteById(subsidiaryId);
-            return true;
+    public void removeSubsidiary(Long subsidiaryId) {
+        Subsidiary subsidiary = subsidiaryRepository.findById(subsidiaryId)
+                .orElseThrow(() -> new SubsidiaryNotFoundException("Subsidiary with ID " + subsidiaryId + " not found."));
+
+        for (Employee employee : subsidiary.getEmployees()) {
+            User user = employee.getUser();
+            if (user != null) {
+                userRepository.delete(user);
+            }
+            employeeRepository.delete(employee);
         }
-        return false;
+        subsidiaryRepository.delete(subsidiary);
     }
+
 
     @Override
     public Boolean updateSubsidiaryFields(Long subsidiaryId, SubsidiaryUpdateRequestDTO updatedFields) {
