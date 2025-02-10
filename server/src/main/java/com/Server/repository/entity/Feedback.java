@@ -40,6 +40,12 @@ public class Feedback {
     @Column(name = "time_expose_danger")
     private WorkTime workTime;
 
+    @Column(name = "factors_workplace_safety")
+    private FactorsWorkplaceSafety factorsWorkplaceSafety;
+
+    @Column(name = "danger_type")
+    private DangerType dangerType;
+
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
     private Employee employee;

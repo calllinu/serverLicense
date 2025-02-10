@@ -1,0 +1,12 @@
+package com.Server.repository.entity;
+
+public enum DangerType {
+    CHEMICAL_FACTORS,
+    BIOLOGICAL_FACTORS,
+    MECHANICAL_FACTORS,
+    ELECTRICAL_FACTORS,
+    HUMAN_FACTORS,
+    ERGONOMIC_FACTORS,
+    ORGANIZATIONAL_FACTORS,
+    OTHER_FACTORS,
+}
