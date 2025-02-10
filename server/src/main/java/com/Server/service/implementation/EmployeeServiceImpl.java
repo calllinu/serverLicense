@@ -2,13 +2,16 @@ package com.Server.service.implementation;
 
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.entity.Employee;
+import com.Server.service.EmailService;
 import com.Server.service.EmployeeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -17,9 +20,12 @@ import java.util.function.Function;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final EmailService emailService;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
+                                EmailService emailService) {
         this.employeeRepository = employeeRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -53,6 +59,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
         employeeRepository.save(existingEmployee);
+
+        if (!hasNullFields(userId)) {
+            Map<String, Object> profileComplete = new HashMap<>();
+            profileComplete.put("userName", existingEmployee.getFullName());
+
+            emailService.sendTemplateEmail(existingEmployee.getUser().getEmail(),
+                    "[SafetyNet AI] Profile completed",
+                    "profile-completed.ftl",
+                    profileComplete);
+        }
     }
 
     private int calculateYearsOfExperience(LocalDate dateOfHiring) {
