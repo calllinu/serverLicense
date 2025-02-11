@@ -1,11 +1,8 @@
 package com.Server.repository.dto;
 
-import com.Server.repository.entity.Employee;
-import com.Server.repository.entity.Organization;
-import com.Server.repository.entity.Subsidiary;
+import com.Server.repository.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import com.Server.repository.entity.Qualification;
 
 import java.time.LocalDate;
 
@@ -21,6 +18,7 @@ public class EmployeeResponseDTO {
     private Integer yearsOfExperience;
     private Subsidiary subsidiary;
     private Organization organization;
+    private Feedback feedback;
 
     public static EmployeeResponseDTO fromEntity(Employee employee) {
         return new EmployeeResponseDTO(
@@ -32,7 +30,8 @@ public class EmployeeResponseDTO {
                 employee.getQualification(),
                 employee.getYearsOfExperience(),
                 employee.getSubsidiary(),
-                employee.getSubsidiary().getOrganization()
+                employee.getSubsidiary().getOrganization(),
+                employee.getFeedback()
         );
     }
 }
