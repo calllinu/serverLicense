@@ -1,8 +1,8 @@
 package com.Server.controller;
 
-import com.Server.repository.dto.EmployeeResponseDTO;
+import com.Server.repository.dto.userDTOs.EmployeeResponseDTO;
 import com.Server.repository.entity.Employee;
-import com.Server.service.EmployeeService;
+import com.Server.service.interfaces.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

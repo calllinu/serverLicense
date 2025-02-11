@@ -5,14 +5,14 @@ import com.Server.repository.EmployeeRepository;
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.OrganizationRepository;
 import com.Server.repository.UserRepository;
-import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryUpdateRequestDTO;
 import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Organization;
 import com.Server.repository.entity.Subsidiary;
-import com.Server.repository.dto.SubsidiaryRequestDTO;
-import com.Server.repository.dto.SubsidiaryResponseDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryRequestDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryResponseDTO;
 import com.Server.repository.entity.User;
-import com.Server.service.SubsidiaryService;
+import com.Server.service.interfaces.SubsidiaryService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

@@ -1,10 +1,9 @@
 package com.Server.service.implementation;
 
 import com.Server.repository.EmployeeRepository;
-import com.Server.repository.FeedbackRepository;
 import com.Server.repository.entity.Employee;
-import com.Server.service.EmailService;
-import com.Server.service.EmployeeService;
+import com.Server.service.interfaces.EmailService;
+import com.Server.service.interfaces.EmployeeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

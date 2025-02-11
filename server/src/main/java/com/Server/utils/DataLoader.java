@@ -2,12 +2,15 @@ package com.Server.utils;
 
 import com.Server.repository.entity.*;
 import com.Server.repository.*;
+import com.Server.repository.entity.enums.Industry;
+import com.Server.repository.entity.enums.Qualification;
+import com.Server.repository.entity.enums.RequestStatus;
+import com.Server.repository.entity.enums.Role;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

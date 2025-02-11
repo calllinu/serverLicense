@@ -1,7 +1,7 @@
 package com.Server.controller;
 
-import com.Server.repository.dto.RegistrationResponseDTO;
-import com.Server.service.RequestService;
+import com.Server.repository.dto.registerRequestDTOs.RegistrationResponseDTO;
+import com.Server.service.interfaces.RequestService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,16 +1,17 @@
 package com.Server.service.implementation;
 
 import com.Server.exception.OrganizationNotFoundException;
-import com.Server.repository.dto.OrganizationRequestDTO;
-import com.Server.repository.dto.OrganizationResponseDTO;
+import com.Server.repository.dto.organizationDTOs.OrganizationRequestDTO;
+import com.Server.repository.dto.organizationDTOs.OrganizationResponseDTO;
 import com.Server.repository.SubsidiaryRepository;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.RegistrationRequestRepository;
-import com.Server.repository.dto.SubsidiaryForOrganizationDTO;
-import com.Server.repository.dto.UserResponseDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryForOrganizationDTO;
+import com.Server.repository.dto.userDTOs.UserResponseDTO;
 import com.Server.repository.entity.*;
 import com.Server.repository.OrganizationRepository;
-import com.Server.service.OrganizationService;
+import com.Server.repository.entity.enums.Role;
+import com.Server.service.interfaces.OrganizationService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -3,10 +3,12 @@ package com.Server.service.implementation;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.RegistrationRequestRepository;
 import com.Server.repository.UserRepository;
-import com.Server.repository.dto.RegistrationResponseDTO;
+import com.Server.repository.dto.registerRequestDTOs.RegistrationResponseDTO;
 import com.Server.repository.entity.*;
-import com.Server.service.EmailService;
-import com.Server.service.RequestService;
+import com.Server.repository.entity.enums.RequestStatus;
+import com.Server.repository.entity.enums.Role;
+import com.Server.service.interfaces.EmailService;
+import com.Server.service.interfaces.RequestService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

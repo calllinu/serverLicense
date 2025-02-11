@@ -1,6 +1,6 @@
 package com.Server.service.implementation;
 
-import com.Server.service.EmailService;
+import com.Server.service.interfaces.EmailService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;

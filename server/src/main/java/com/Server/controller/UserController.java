@@ -1,7 +1,11 @@
 package com.Server.controller;
 
-import com.Server.repository.dto.*;
-import com.Server.service.UserService;
+import com.Server.repository.dto.authDTOs.LoginRequestDTO;
+import com.Server.repository.dto.authDTOs.LoginResponseDTO;
+import com.Server.repository.dto.authDTOs.LogoutRequestDTO;
+import com.Server.repository.dto.authDTOs.LogoutResponseDTO;
+import com.Server.repository.dto.userDTOs.UserRequestDTO;
+import com.Server.service.interfaces.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

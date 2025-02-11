@@ -1,11 +1,11 @@
 package com.Server.repository.entity;
 
+import com.Server.repository.entity.enums.RequestStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Data
 @Entity

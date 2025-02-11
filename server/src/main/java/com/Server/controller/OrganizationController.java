@@ -1,11 +1,10 @@
 package com.Server.controller;
 
-import com.Server.repository.dto.OrganizationRequestDTO;
-import com.Server.repository.dto.OrganizationResponseDTO;
-import com.Server.repository.dto.SubsidiaryForOrganizationDTO;
+import com.Server.repository.dto.organizationDTOs.OrganizationRequestDTO;
+import com.Server.repository.dto.organizationDTOs.OrganizationResponseDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryForOrganizationDTO;
 import com.Server.repository.entity.Organization;
-import com.Server.repository.entity.Subsidiary;
-import com.Server.service.OrganizationService;
+import com.Server.service.interfaces.OrganizationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;

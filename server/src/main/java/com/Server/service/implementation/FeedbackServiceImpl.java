@@ -5,7 +5,7 @@ import com.Server.repository.EmployeeRepository;
 import com.Server.repository.FeedbackRepository;
 import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Feedback;
-import com.Server.service.FeedbackService;
+import com.Server.service.interfaces.FeedbackService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

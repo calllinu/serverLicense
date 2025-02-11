@@ -1,5 +1,6 @@
 package com.Server.repository.entity;
 
+import com.Server.repository.entity.enums.Role;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

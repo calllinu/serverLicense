@@ -1,10 +1,10 @@
 package com.Server.controller;
 
 import com.Server.exception.SubsidiaryNotFoundException;
-import com.Server.repository.dto.SubsidiaryRequestDTO;
-import com.Server.repository.dto.SubsidiaryResponseDTO;
-import com.Server.repository.dto.SubsidiaryUpdateRequestDTO;
-import com.Server.service.SubsidiaryService;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryRequestDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryResponseDTO;
+import com.Server.repository.dto.subsidiaryDTOs.SubsidiaryUpdateRequestDTO;
+import com.Server.service.interfaces.SubsidiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
 package com.Server.controller;
 
 import com.Server.repository.entity.Feedback;
-import com.Server.service.FeedbackService;
+import com.Server.service.interfaces.FeedbackService;
 import org.springframework.web.bind.annotation.*;
 
 
