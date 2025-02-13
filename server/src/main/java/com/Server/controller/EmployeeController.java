@@ -1,6 +1,7 @@
 package com.Server.controller;
 
-import com.Server.repository.dto.userDTOs.EmployeeResponseDTO;
+import com.Server.repository.dto.employeeDTOs.EmployeeDetailsResponseDTO;
+import com.Server.repository.dto.employeeDTOs.EmployeeResponseDTO;
 import com.Server.repository.entity.Employee;
 import com.Server.service.interfaces.EmployeeService;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<EmployeeResponseDTO> getEmployeeByUserId(@RequestParam Long userId) {
+    public ResponseEntity<EmployeeDetailsResponseDTO> getEmployeeByUserId(@RequestParam Long userId) {
         try {
             Employee employee = employeeService.getEmployeeByUserId(userId);
+            boolean hasNullFields = employeeService.hasNullFields(userId);
             EmployeeResponseDTO employeeDTO = EmployeeResponseDTO.fromEntity(employee);
-            return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
+            EmployeeDetailsResponseDTO employeeDetailsDTO = new EmployeeDetailsResponseDTO(employeeDTO, hasNullFields);
+            return new ResponseEntity<>(employeeDetailsDTO, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -38,16 +41,6 @@ public class EmployeeController {
         try {
             employeeService.updateEmployee(userId, updatedEmployee);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/null-fields/{userId}")
-    public ResponseEntity<Boolean> hasNullFields(@PathVariable Long userId) {
-        try {
-            boolean hasNullFields = employeeService.hasNullFields(userId);
-            return new ResponseEntity<>(hasNullFields, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

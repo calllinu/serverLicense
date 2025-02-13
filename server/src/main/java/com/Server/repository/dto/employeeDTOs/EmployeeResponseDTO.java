@@ -1,4 +1,4 @@
-package com.Server.repository.dto.userDTOs;
+package com.Server.repository.dto.employeeDTOs;
 
 import com.Server.repository.entity.*;
 import com.Server.repository.entity.enums.Qualification;
