@@ -14,4 +14,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     void deleteByUserUserId(Long userId);
     @Query("SELECT e FROM Employee e WHERE e.subsidiary.subsidiaryId = :subsidiaryId")
     List<Employee> findAllBySubsidiaryId(@Param("subsidiaryId") Long subsidiaryId);
+    Employee findByEmployeeId(Long employeeId);
 }

@@ -7,7 +7,15 @@ import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Feedback;
 import com.Server.service.interfaces.FeedbackService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,4 +39,46 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setEmployee(employee);
         feedbackRepository.save(feedback);
     }
+
+    @Override
+    public Map<String, Object> getAllFeedbacks(int page, int size) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<Feedback> pagedResult = feedbackRepository.findAll(paging);
+
+        List<Map<String, Object>> feedbackDetails = pagedResult.getContent().stream().map(feedback -> {
+            Map<String, Object> feedbackMap = new HashMap<>();
+            feedbackMap.put("feedback", feedback);
+
+            Employee employee = employeeRepository.findByEmployeeId(feedback.getEmployee().getEmployeeId());
+            if (employee != null) {
+                Map<String, Object> employeeDetails = new HashMap<>();
+
+                Map<String, Object> subsidiaryDetails = new HashMap<>();
+                subsidiaryDetails.put("subsidiaryCode", employee.getSubsidiary().getSubsidiaryCode());
+                subsidiaryDetails.put("country", employee.getSubsidiary().getCountry());
+                subsidiaryDetails.put("city", employee.getSubsidiary().getCity());
+                subsidiaryDetails.put("address", employee.getSubsidiary().getAddress());
+
+                Map<String, Object> organizationDetails = new HashMap<>();
+                organizationDetails.put("organizationCode", employee.getSubsidiary().getOrganization().getOrganizationCode());
+                organizationDetails.put("name", employee.getSubsidiary().getOrganization().getName());
+                organizationDetails.put("industry", employee.getSubsidiary().getOrganization().getIndustry());
+
+                employeeDetails.put("subsidiaryDetails", subsidiaryDetails);
+                employeeDetails.put("organizationDetails", organizationDetails);
+
+                feedbackMap.put("employeeDetails", employeeDetails);
+            }
+            return feedbackMap;
+        }).collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("feedbacks", feedbackDetails);
+        response.put("currentPage", pagedResult.getNumber());
+        response.put("totalItems", pagedResult.getTotalElements());
+        response.put("totalPages", pagedResult.getTotalPages());
+
+        return response;
+    }
+
 }
