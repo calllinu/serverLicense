@@ -129,5 +129,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new SubsidiaryForOrganizationDTO(organizationId, subsidiaries);
     }
 
+    @Override
+    public List<String> getAllOrganizationCodes() {
+        return organizationRepository.findAll().stream().map(Organization::getOrganizationCode).toList();
+    }
 
 }

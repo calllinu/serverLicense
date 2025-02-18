@@ -15,4 +15,5 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
     @Query("SELECT o from Organization o JOIN o.subsidiaries s JOIN s.employees e WHERE e.user.userId = :userId")
     Organization findByAdminUserId(@Param("userId") Long userId);
+    Organization findByOrganizationCode(String organizationCode);
 }

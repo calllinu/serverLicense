@@ -85,4 +85,9 @@ public class OrganizationController {
     public SubsidiaryForOrganizationDTO getAllSubsidiariesForOrganization(@PathVariable Long userId) {
         return organizationService.getAllSubsidiariesForOrganization(userId);
     }
+
+    @GetMapping("/get-all-organization-names")
+    public List<String> getAllOrganizationNames() {
+        return organizationService.getAllOrganizationCodes();
+    }
 }

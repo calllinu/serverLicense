@@ -1,10 +1,13 @@
 package com.Server.service.implementation;
 
 import com.Server.exception.EmployeeNotFoundException;
+import com.Server.exception.OrganizationNotFoundException;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.FeedbackRepository;
+import com.Server.repository.OrganizationRepository;
 import com.Server.repository.entity.Employee;
 import com.Server.repository.entity.Feedback;
+import com.Server.repository.entity.Organization;
 import com.Server.service.interfaces.FeedbackService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,10 +28,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final EmployeeRepository employeeRepository;
 
+    private final OrganizationRepository organizationRepository;
+
     public FeedbackServiceImpl(FeedbackRepository feedbackRepository,
-                               EmployeeRepository employeeRepository) {
+                               EmployeeRepository employeeRepository,
+                               OrganizationRepository organizationRepository) {
         this.feedbackRepository = feedbackRepository;
         this.employeeRepository = employeeRepository;
+        this.organizationRepository = organizationRepository;
     }
 
     @Override
@@ -68,6 +76,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 employeeDetails.put("organizationDetails", organizationDetails);
 
                 feedbackMap.put("employeeDetails", employeeDetails);
+                feedbackMap.put("feedbackId", feedback.getFeedBackId());
             }
             return feedbackMap;
         }).collect(Collectors.toList());
@@ -81,4 +90,18 @@ public class FeedbackServiceImpl implements FeedbackService {
         return response;
     }
 
+    @Override
+    public List<Feedback> getFeedbacksForOrganization(String organizationCode) {
+        Organization organization = organizationRepository.findByOrganizationCode(organizationCode);
+        if (organization != null) {
+            return organization.getSubsidiaries().stream()
+                    .flatMap(subsidiary -> subsidiary.getEmployees().stream())
+                    .map(Employee::getFeedback)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        else {
+            throw new OrganizationNotFoundException("Organization not found");
+        }
+    }
 }

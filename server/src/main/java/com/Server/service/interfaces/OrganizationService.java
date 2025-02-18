@@ -18,4 +18,6 @@ public interface OrganizationService {
     Page<OrganizationResponseDTO> getAllOrganizationsPageable(PageRequest pageRequest, String search);
     List<Organization> getAllOrganizations();
     SubsidiaryForOrganizationDTO getAllSubsidiariesForOrganization(Long userId);
+    List<String> getAllOrganizationCodes();
 }
+

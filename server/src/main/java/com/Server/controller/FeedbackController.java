@@ -5,6 +5,7 @@ import com.Server.service.interfaces.FeedbackService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,5 +30,11 @@ public class FeedbackController {
             @RequestParam(defaultValue = "10") int size) {
         Map<String, Object> response = feedbackService.getAllFeedbacks(page, size);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get-organization-feedbacks/{organizationCode}")
+    public ResponseEntity<List<Feedback>> getFeedbacksForOrganization(@PathVariable String organizationCode) {
+        List<Feedback> feedback = feedbackService.getFeedbacksForOrganization(organizationCode);
+        return ResponseEntity.ok(feedback);
     }
 }
