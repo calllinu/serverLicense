@@ -38,6 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateEmployee(Long userId, Employee updatedEmployee) {
         Employee existingEmployee = getEmployeeByUserId(userId);
 
+        boolean initialNullFields = hasNullFields(userId);
+
         updateIfNotNull(existingEmployee::setFullName, updatedEmployee.getFullName());
         updateIfNotNull(existingEmployee::setEmployeeCNP, updatedEmployee.getEmployeeCNP());
 
@@ -60,7 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         updateIfNotNull(existingEmployee::setQualification, updatedEmployee.getQualification());
         employeeRepository.save(existingEmployee);
 
-        if (!hasNullFields(userId)) {
+        if (!hasNullFields(userId) && initialNullFields) {
             Map<String, Object> profileComplete = new HashMap<>();
             profileComplete.put("userName", existingEmployee.getFullName());
 
