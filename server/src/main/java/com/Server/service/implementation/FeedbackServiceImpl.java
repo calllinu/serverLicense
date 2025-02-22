@@ -76,7 +76,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 employeeDetails.put("organizationDetails", organizationDetails);
 
                 feedbackMap.put("employeeDetails", employeeDetails);
-                feedbackMap.put("feedbackId", feedback.getFeedBackId());
+                feedbackMap.put("feedbackId", feedback.getFeedbackId());
             }
             return feedbackMap;
         }).collect(Collectors.toList());

@@ -17,7 +17,7 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "feedback_id")
-    private Integer feedBackId;
+    private Integer feedbackId;
 
     @Column(name = "satisfy_salary")
     @Enumerated(EnumType.STRING)
