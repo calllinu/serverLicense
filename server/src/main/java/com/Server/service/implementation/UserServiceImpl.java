@@ -1,6 +1,8 @@
 
 package com.Server.service.implementation;
 
+import com.Server.exception.OrganizationNotFoundException;
+import com.Server.exception.SubsidiaryNotFoundException;
 import com.Server.exception.UserNotFoundException;
 import com.Server.repository.EmployeeRepository;
 import com.Server.repository.RegistrationRequestRepository;
@@ -14,6 +16,8 @@ import com.Server.repository.entity.enums.Role;
 import com.Server.security.JwtUtil;
 import com.Server.service.interfaces.EmailService;
 import com.Server.service.interfaces.UserService;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -22,10 +26,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @Service
@@ -66,10 +68,51 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private final Cache<String, String> otpCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(2, TimeUnit.MINUTES)
+            .build();
+
+    @Override public void sendOtp(String email) {
+        userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Random random = new Random();
+        String otp = String.format("%06d", random.nextInt(999999));
+        otpCache.put(email, otp);
+
+        Map<String, Object> otpTemplateData = new HashMap<>();
+        otpTemplateData.put("otp", otp);
+        otpTemplateData.put("message", "Use the following OTP to verify your email address.");
+
+        emailService.sendTemplateEmail(email, "[SafetyNet AI] OTP Verification", "otp-notification.ftl", otpTemplateData);
+    }
+
+    @Override
+    public boolean verifyOtp(String email, String otp) {
+        try {
+            String storedOtp = otpCache.getIfPresent(email);
+
+            if(storedOtp != null && storedOtp.equals(otp)) {
+                otpCache.invalidate(email);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void changePassword(String email, String otp, String newPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        String encryptedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encryptedPassword);
+        userRepository.save(user);
+    }
+
     @Override
     public void submitRegistrationRequest(UserRequestDTO userRequest) {
         Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid subsidiary ID"));
+                .orElseThrow(() -> new SubsidiaryNotFoundException("Invalid subsidiary ID"));
 
         Organization organization = subsidiary.getOrganization();
 
@@ -78,7 +121,7 @@ public class UserServiceImpl implements UserService {
                 .map(Employee::getUser)
                 .filter(user -> user.getRole() == Role.ORG_ADMIN)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No ORG_ADMIN found!"));
+                .orElseThrow(() -> new OrganizationNotFoundException("No ORG_ADMIN found!"));
 
         RegistrationRequest request = new RegistrationRequest();
         request.setUsername(userRequest.getUsername());
@@ -135,6 +178,8 @@ public class UserServiceImpl implements UserService {
             log.info("User logged out successfully. Tokens blacklisted: AccessToken '{}', RefreshToken '{}'", accessToken, refreshToken);
         }
     }
+
+
 
     @Override
     public PasswordEncoder getPasswordEncoder() {

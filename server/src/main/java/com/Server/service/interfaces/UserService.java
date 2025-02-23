@@ -13,4 +13,8 @@ public interface UserService {
     void logout(String accessToken, String refreshToken);
 
     PasswordEncoder getPasswordEncoder();
+
+    void sendOtp(String email);
+    boolean verifyOtp(String email, String otp);
+    void changePassword(String email, String otp, String password);
 }
