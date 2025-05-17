@@ -144,6 +144,14 @@ public class UserServiceImpl implements UserService {
                 "[SafetyNet AI] New Registration Request",
                 "admin-notification.ftl",
                 adminTemplateData);
+
+        Map<String, Object> employeeAnswer = new HashMap<>();
+
+        emailService.sendTemplateEmail(userRequest.getEmail(),
+                "[SafetyNet AI] Registration Request Submitted",
+                "employee-notification.ftl",
+                employeeAnswer);
+
     }
 
     @Override
