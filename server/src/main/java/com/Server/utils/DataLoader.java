@@ -155,15 +155,16 @@ public class DataLoader implements CommandLineRunner {
                     if (random.nextDouble() < 0.8) {
                         Feedback feedback = new Feedback();
                         feedback.setEmployee(employee);
-                        feedback.setConfirmationSalary(randomEnum(Confirmation.class));
-                        feedback.setEngagement(randomEnum(Engagement.class));
-                        feedback.setConfirmationOvertime(randomEnum(Confirmation.class));
-                        feedback.setConfirmationEquipmentAdequate(randomEnum(Confirmation.class));
-                        feedback.setConfirmationSafetyMeasures(randomEnum(Confirmation.class));
-                        feedback.setConfirmationProtectionMeasures(randomEnum(Confirmation.class));
-                        feedback.setWorkTime(randomEnum(WorkTime.class));
-                        feedback.setFactorsWorkplaceSafety(randomEnum(FactorsWorkplaceSafety.class));
-                        feedback.setDangerType(randomEnum(DangerType.class));
+
+                        feedback.setSatisfactionLevel(Math.round((random.nextDouble()) * 100.0) / 100.0);
+                        feedback.setLastEvaluation(Math.round((random.nextDouble()) * 100.0) / 100.0);
+                        feedback.setNumberProject(1 + random.nextInt(8));
+                        feedback.setAverageMonthlyHours(90 + random.nextInt(241));
+                        feedback.setTimeSpendCompany(1 + random.nextInt(10));
+                        feedback.setWorkAccident(random.nextBoolean() ? 1 : 0);
+                        feedback.setPromotionLast5years(random.nextBoolean() ? 1 : 0);
+                        feedback.setDepartment(randomEnum(Departments.class).transformValues());
+                        feedback.setSalary(randomEnum(Salary.class).transformToString());
 
                         feedbackRepository.save(feedback);
                     }

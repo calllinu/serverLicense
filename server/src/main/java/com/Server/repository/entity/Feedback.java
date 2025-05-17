@@ -1,6 +1,5 @@
 package com.Server.repository.entity;
 
-import com.Server.repository.entity.enums.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,41 +18,32 @@ public class Feedback {
     @Column(name = "feedback_id")
     private Integer feedbackId;
 
-    @Column(name = "satisfy_salary")
-    @Enumerated(EnumType.STRING)
-    private Confirmation confirmationSalary;
+    @Column(name = "satisfaction_level")
+    private Double satisfactionLevel;
 
-    @Column(name = "type_of_engagement")
-    @Enumerated(EnumType.STRING)
-    private Engagement engagement;
+    @Column(name = "last_evaluation")
+    private Double lastEvaluation;
 
-    @Column(name = "overtime")
-    @Enumerated(EnumType.STRING)
-    private Confirmation confirmationOvertime;
+    @Column(name = "number_project")
+    private Integer numberProject;
 
-    @Column(name = "protective_equipment_adequate")
-    @Enumerated(EnumType.STRING)
-    private Confirmation confirmationEquipmentAdequate;
+    @Column(name = "average_monthly_hours")
+    private Integer averageMonthlyHours;
 
-    @Column(name = "safety_measures_applied")
-    @Enumerated(EnumType.STRING)
-    private Confirmation confirmationSafetyMeasures;
+    @Column(name = "time_spend_company")
+    private Integer timeSpendCompany;
 
-    @Column(name = "protection_measures_clear")
-    @Enumerated(EnumType.STRING)
-    private Confirmation confirmationProtectionMeasures;
+    @Column(name = "Work_accident")
+    private Integer workAccident;
 
-    @Column(name = "time_expose_danger")
-    @Enumerated(EnumType.STRING)
-    private WorkTime workTime;
+    @Column(name = "promotion_last_5years")
+    private Integer promotionLast5years;
 
-    @Column(name = "factors_workplace_safety")
-    @Enumerated(EnumType.STRING)
-    private FactorsWorkplaceSafety factorsWorkplaceSafety;
+    @Column(name = "dept")
+    private String department;
 
-    @Column(name = "danger_type")
-    @Enumerated(EnumType.STRING)
-    private DangerType dangerType;
+    @Column(name = "salary")
+    private String salary;
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
