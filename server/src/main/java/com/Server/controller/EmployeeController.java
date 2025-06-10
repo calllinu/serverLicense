@@ -4,6 +4,7 @@ import com.Server.repository.dto.employeeDTOs.EmployeeDetailsResponseDTO;
 import com.Server.repository.dto.employeeDTOs.EmployeeResponseDTO;
 import com.Server.repository.entity.Employee;
 import com.Server.service.interfaces.EmployeeService;
+import com.Server.service.interfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,12 @@ import java.util.stream.Collectors;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final UserService userService;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService,
+                              UserService userService) {
         this.employeeService = employeeService;
+        this.userService = userService;
     }
 
     @GetMapping("/user")
@@ -40,6 +44,7 @@ public class EmployeeController {
             @PathVariable Long userId) {
         try {
             employeeService.updateEmployee(userId, updatedEmployee);
+            userService.updateUserDetails(userId, updatedEmployee);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -68,5 +73,4 @@ public class EmployeeController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
-
 }

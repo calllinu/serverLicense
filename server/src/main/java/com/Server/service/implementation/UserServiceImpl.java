@@ -1,4 +1,3 @@
-
 package com.Server.service.implementation;
 
 import com.Server.exception.OrganizationNotFoundException;
@@ -110,6 +109,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserDetails(Long userId, Employee updatedEmployee) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.setFullName(updatedEmployee.getFullName());
+
+        userRepository.save(user);
+    }
+
+    @Override
     public void submitRegistrationRequest(UserRequestDTO userRequest) {
         Subsidiary subsidiary = subsidiaryRepository.findById(userRequest.getSubsidiaryId())
                 .orElseThrow(() -> new SubsidiaryNotFoundException("Invalid subsidiary ID"));
@@ -185,12 +194,5 @@ public class UserServiceImpl implements UserService {
         if (log.isInfoEnabled()) {
             log.info("User logged out successfully. Tokens blacklisted: AccessToken '{}', RefreshToken '{}'", accessToken, refreshToken);
         }
-    }
-
-
-
-    @Override
-    public PasswordEncoder getPasswordEncoder() {
-        return this.passwordEncoder;
     }
 }

@@ -6,15 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ModelMapperConfig {
-
-    /**
-     * used for the conversion of entities object to DTO
-     *
-     * @return ModelMapper
-     */
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
-
 }

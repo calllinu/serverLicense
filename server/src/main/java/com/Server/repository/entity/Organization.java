@@ -37,8 +37,6 @@ public class Organization {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("organizationReference")
     private List<Subsidiary> subsidiaries;
-
-
 }
 
 
